@@ -1,0 +1,44 @@
+import Link from 'next/link'
+import { ArrowRight, Globe, Leaf } from 'lucide-react'
+
+export default function AstraPage() {
+  return (
+    <div className="min-h-screen bg-surface-app">
+      <section className="relative overflow-hidden" style={{ background: '#111115', minHeight: '380px' }}>
+        <div className="relative max-w-7xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-dm font-semibold text-white mb-6" style={{ background: 'rgba(5, 150, 105, 0.3)', border: '1px solid rgba(5, 150, 105, 0.4)' }}>
+              <Leaf className="w-3 h-3" />
+              Horizon Astra
+            </div>
+            <h1 className="font-sora font-bold text-3xl text-white mb-4 leading-tight">
+              ESG &amp; Sustainability<br />
+              <span className="text-brand-accent">Analytics Platform</span>
+            </h1>
+            <p className="font-dm text-white/70 text-base mb-8 leading-relaxed">
+              Navigate ESG compliance and sustainability benchmarking with data-driven insights across 10,000+ companies globally.
+            </p>
+            <Link href="/pricing" className="flex items-center gap-2 w-fit px-6 py-3 rounded-full text-sm font-dm font-bold text-white" style={{ background: '#059669' }}>
+              Explore Astra <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="w-48 h-48 rounded-full flex items-center justify-center" style={{ background: 'rgba(5, 150, 105, 0.2)', border: '2px solid rgba(5, 150, 105, 0.4)' }}>
+              <Globe className="w-20 h-20 text-emerald-400 opacity-80" />
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid md:grid-cols-3 gap-5">
+          {['10K+ ESG Scores', '200+ ESG Metrics', '15 Major Frameworks'].map((feat, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-card text-center">
+              <Leaf className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
+              <div className="font-sora font-bold text-base text-brand-primary">{feat}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}

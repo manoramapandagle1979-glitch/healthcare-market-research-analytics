@@ -1,0 +1,27 @@
+import type { Industry } from '@/types'
+
+export const mockIndustries: Industry[] = [
+  { id: 'aerospace', name: 'Aerospace & Defence', subIndustries: ['Commercial Aviation', 'Defense Systems', 'Space Technology', 'Drones & UAVs', 'Satellites'], marketCount: 124 },
+  { id: 'animal-health', name: 'Animal Health', subIndustries: ['Vaccines', 'Diagnostics', 'Feed Additives', 'Companion Animal', 'Livestock'], marketCount: 89 },
+  { id: 'automotive', name: 'Automotive & Transportation', subIndustries: ['Electric Vehicles', 'Autonomous Vehicles', 'Fleet Management', 'Telematics', 'Automotive Parts'], marketCount: 312 },
+  { id: 'biotech', name: 'Biotechnology', subIndustries: ['Monoclonal Antibodies', 'Gene Therapy', 'Cell Therapy', 'Bioinformatics', 'Synthetic Biology', 'Bioprocessing'], marketCount: 248 },
+  { id: 'bulk-chemicals', name: 'Bulk Chemicals', subIndustries: ['Industrial Gases', 'Petrochemicals', 'Fertilizers', 'Chlor-Alkali', 'Acids & Bases'], marketCount: 156 },
+  { id: 'clinical-diagnostics', name: 'Clinical Diagnostics', subIndustries: ['Molecular Diagnostics', 'Point-of-Care Testing', 'Immunoassays', 'Histology', 'Flow Cytometry'], marketCount: 198 },
+  { id: 'consumer-goods', name: 'Consumer Goods', subIndustries: ['Personal Care', 'Home Care', 'Beauty & Cosmetics', 'Apparel', 'Electronics'], marketCount: 421 },
+  { id: 'consumer-services', name: 'Consumer Services', subIndustries: ['E-commerce', 'Streaming', 'Travel & Tourism', 'Food Delivery', 'EdTech'], marketCount: 287 },
+  { id: 'energy', name: 'Energy & Power', subIndustries: ['Solar Energy', 'Wind Energy', 'Energy Storage', 'Oil & Gas', 'Smart Grid'], marketCount: 334 },
+  { id: 'financial-services', name: 'Financial Services', subIndustries: ['Fintech', 'Banking', 'Insurance', 'Asset Management', 'Payments'], marketCount: 267 },
+  { id: 'food-beverages', name: 'Food Beverages & Tobacco', subIndustries: ['Functional Food', 'Plant-Based', 'Beverages', 'Dairy', 'Tobacco Alternatives'], marketCount: 389 },
+  { id: 'healthcare', name: 'Healthcare', subIndustries: ['Digital Health', 'Hospital Management', 'Telehealth', 'Wearables', 'Health IT'], marketCount: 312 },
+  { id: 'materials', name: 'Materials', subIndustries: ['Advanced Materials', 'Composites', 'Ceramics', 'Coatings', 'Adhesives'], marketCount: 178 },
+  { id: 'medtech', name: 'MedTech', subIndustries: ['Surgical Robotics', 'Imaging Systems', 'Implants', 'Wound Care', 'Orthopedics'], marketCount: 234 },
+  { id: 'metals-mining', name: 'Metals & Mining', subIndustries: ['Rare Earth Elements', 'Steel', 'Aluminum', 'Copper', 'Lithium'], marketCount: 142 },
+  { id: 'nutrition', name: 'Nutrition', subIndustries: ['Sports Nutrition', 'Dietary Supplements', 'Infant Nutrition', 'Clinical Nutrition', 'Probiotics'], marketCount: 189 },
+  { id: 'packaging', name: 'Packaging', subIndustries: ['Flexible Packaging', 'Rigid Plastics', 'Sustainable Packaging', 'Smart Packaging', 'Labels'], marketCount: 201 },
+  { id: 'pharma', name: 'Pharmaceuticals', subIndustries: ['Oncology', 'CNS', 'Cardiovascular', 'Generic Drugs', 'Contract Manufacturing'], marketCount: 456 },
+  { id: 'plastics', name: 'Plastics', subIndustries: ['Engineering Plastics', 'Bio-Based Plastics', 'Recycled Plastics', 'Films', 'Foams'], marketCount: 167 },
+  { id: 'semiconductor', name: 'Semiconductor', subIndustries: ['Memory Chips', 'Logic Chips', 'Power Semiconductors', 'Sensors', 'Photonics'], marketCount: 203 },
+  { id: 'sexual-health', name: 'Sexual Health', subIndustries: ['Contraceptives', 'STI Testing', 'Fertility', 'ED Treatment', 'Sex Wellness'], marketCount: 98 },
+  { id: 'specialty-chemicals', name: 'Specialty Chemicals', subIndustries: ['Electronic Chemicals', 'Agrochemicals', 'Construction Chemicals', 'Water Treatment', 'Surfactants'], marketCount: 287 },
+  { id: 'telecom', name: 'Telecom & Technology', subIndustries: ['5G', 'Cloud Computing', 'Cybersecurity', 'IoT', 'AI & ML', 'Quantum Computing'], marketCount: 378 },
+]

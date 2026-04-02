@@ -49,10 +49,10 @@ export default function StatCounter({ value, prefix = '', suffix = '', label, du
 
   return (
     <div ref={ref} className="text-center">
-      <div className="font-sora font-bold text-4xl mb-2" style={{ color: '#c8a96e' }}>
+      <div className="font-headline font-extrabold text-4xl mb-2 text-secondary-fixed">
         {prefix}{formatCount(count)}{suffix}
       </div>
-      <div className="text-sm font-dm text-white/50 uppercase tracking-widest">{label}</div>
+      <div className="text-sm font-body text-white/60 uppercase tracking-widest">{label}</div>
     </div>
   )
 }

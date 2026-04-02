@@ -118,25 +118,24 @@ function SearchPageInner() {
   })).filter((i) => i.count > 0)
 
   return (
-    <div className="min-h-screen bg-surface-app page-content">
+    <div className="min-h-screen bg-background page-content">
       {/* Search Header */}
-      <div className="bg-white border-b" style={{ borderColor: '#e5e1d8' }}>
+      <div className="bg-surface-container-lowest border-b border-surface-container-high">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Search market statistics & reports..."
-                className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-dm focus:outline-none focus:ring-2 focus:ring-[#c8a96e]/30 focus:border-[#c8a96e] transition-all"
-                style={{ border: '1px solid #e5e1d8' }}
+                className="input-field pl-10"
               />
               {inputValue && (
                 <button
                   onClick={() => { setInputValue(''); setQuery('') }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               )}
@@ -150,22 +149,14 @@ function SearchPageInner() {
       <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
         {/* Left Filter Panel — sticky */}
         <aside className="w-64 shrink-0">
-          <div className="bg-white rounded-2xl shadow-card p-5 sticky top-[88px]"
-            style={{ border: '1px solid #e5e1d8' }}>
-            {/* Subtle top gradient fade */}
-            <div className="absolute top-0 left-0 right-0 h-6 rounded-t-2xl pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(248,247,244,0.6), transparent)' }} />
-
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card p-5 sticky top-[88px]">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4" style={{ color: '#0a0f1e' }} />
-                <span className="font-sora font-semibold text-sm" style={{ color: '#0a0f1e' }}>Filters</span>
+                <SlidersHorizontal className="w-4 h-4 text-primary" />
+                <span className="font-headline font-semibold text-sm text-primary">Filters</span>
               </div>
               {hasFilters && (
-                <button onClick={clearAll} className="text-xs font-dm font-medium transition-colors"
-                  style={{ color: '#c8a96e' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#b8924f')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#c8a96e')}>
+                <button onClick={clearAll} className="text-xs font-body font-medium text-secondary hover:text-on-secondary-fixed-variant transition-colors">
                   Reset all
                 </button>
               )}
@@ -173,7 +164,7 @@ function SearchPageInner() {
 
             {/* TYPE */}
             <div className="mb-6">
-              <h4 className="font-sora font-semibold text-xs uppercase tracking-widest text-gray-400 mb-3">TYPE</h4>
+              <h4 className="font-headline font-semibold text-xs uppercase tracking-widest text-on-surface-variant mb-3">TYPE</h4>
               <div className="space-y-2">
                 {typeCounts.map((type) => {
                   const Icon = type.icon
@@ -184,14 +175,14 @@ function SearchPageInner() {
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleFilter(selectedTypes, setSelectedTypes, type.id)}
-                        className="w-4 h-4 rounded cursor-pointer checkbox-gold"
-                        style={{ accentColor: '#c8a96e', borderColor: '#e5e1d8' }}
+                        className="w-4 h-4 rounded cursor-pointer"
+                        style={{ accentColor: '#006a61' }}
                       />
-                      <Icon className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-sm font-dm text-gray-600 group-hover:text-[#0a0f1e] transition-colors flex-1">
+                      <Icon className="w-3.5 h-3.5 text-outline" />
+                      <span className="text-sm font-body text-on-surface-variant group-hover:text-primary transition-colors flex-1">
                         {type.label}
                       </span>
-                      <span className="text-xs font-dm text-gray-400">{type.count}</span>
+                      <span className="text-xs font-body text-on-surface-variant">{type.count}</span>
                     </label>
                   )
                 })}
@@ -200,7 +191,7 @@ function SearchPageInner() {
 
             {/* INDUSTRY */}
             <div className="mb-6">
-              <h4 className="font-sora font-semibold text-xs uppercase tracking-widest text-gray-400 mb-3">INDUSTRY</h4>
+              <h4 className="font-headline font-semibold text-xs uppercase tracking-widest text-on-surface-variant mb-3">INDUSTRY</h4>
               <div className="space-y-2">
                 {industryCounts.slice(0, showMoreIndustries ? undefined : 8).map((ind) => {
                   const checked = selectedIndustries.includes(ind.id)
@@ -210,21 +201,20 @@ function SearchPageInner() {
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleFilter(selectedIndustries, setSelectedIndustries, ind.id)}
-                        className="w-4 h-4 rounded cursor-pointer checkbox-gold"
-                        style={{ accentColor: '#c8a96e', borderColor: '#e5e1d8' }}
+                        className="w-4 h-4 rounded cursor-pointer"
+                        style={{ accentColor: '#006a61' }}
                       />
-                      <span className="text-sm font-dm text-gray-600 group-hover:text-[#0a0f1e] transition-colors flex-1 truncate">
+                      <span className="text-sm font-body text-on-surface-variant group-hover:text-primary transition-colors flex-1 truncate">
                         {ind.name}
                       </span>
-                      <span className="text-xs font-dm text-gray-400 shrink-0">{ind.count}</span>
+                      <span className="text-xs font-body text-on-surface-variant shrink-0">{ind.count}</span>
                     </label>
                   )
                 })}
                 {!showMoreIndustries && industryCounts.length > 8 && (
                   <button
                     onClick={() => setShowMoreIndustries(true)}
-                    className="text-xs font-dm font-medium transition-colors flex items-center gap-1"
-                    style={{ color: '#c8a96e' }}>
+                    className="text-xs font-body font-medium text-secondary hover:text-on-secondary-fixed-variant transition-colors flex items-center gap-1">
                     <ChevronDown className="w-3 h-3" />
                     {industryCounts.length - 8} more
                   </button>
@@ -232,7 +222,7 @@ function SearchPageInner() {
                 {showMoreIndustries && (
                   <button
                     onClick={() => setShowMoreIndustries(false)}
-                    className="text-xs font-dm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+                    className="text-xs font-body font-medium text-on-surface-variant hover:text-on-surface transition-colors">
                     Show less
                   </button>
                 )}
@@ -242,11 +232,10 @@ function SearchPageInner() {
             {/* Active Filters */}
             {(selectedTypes.length > 0 || selectedIndustries.length > 0) && (
               <div>
-                <h4 className="font-sora font-semibold text-xs uppercase tracking-widest text-gray-400 mb-2">ACTIVE FILTERS</h4>
+                <h4 className="font-headline font-semibold text-xs uppercase tracking-widest text-on-surface-variant mb-2">ACTIVE FILTERS</h4>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedTypes.map((t) => (
-                    <span key={t} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-dm font-medium"
-                      style={{ color: '#c8a96e', background: 'rgba(200,169,110,0.10)' }}>
+                    <span key={t} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-body font-medium text-secondary bg-secondary-container/20">
                       {t}
                       <button onClick={() => toggleFilter(selectedTypes, setSelectedTypes, t)}>
                         <X className="w-2.5 h-2.5" />
@@ -256,8 +245,7 @@ function SearchPageInner() {
                   {selectedIndustries.map((id) => {
                     const ind = mockIndustries.find((i) => i.id === id)
                     return ind ? (
-                      <span key={id} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-dm font-medium"
-                        style={{ color: '#6366f1', background: '#eef2ff' }}>
+                      <span key={id} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-body font-medium text-tertiary-container bg-tertiary-container/10">
                         {ind.name.split(' ')[0]}
                         <button onClick={() => toggleFilter(selectedIndustries, setSelectedIndustries, id)}>
                           <X className="w-2.5 h-2.5" />
@@ -275,11 +263,11 @@ function SearchPageInner() {
         <main className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <span className="font-sora font-semibold text-lg" style={{ color: '#0a0f1e' }}>
+              <span className="font-headline font-semibold text-lg text-primary">
                 {results.length} Results
               </span>
               {query && (
-                <span className="font-dm text-sm text-gray-500 ml-2">for &ldquo;{query}&rdquo;</span>
+                <span className="font-body text-sm text-on-surface-variant ml-2">for &ldquo;{query}&rdquo;</span>
               )}
             </div>
             <div className="relative">
@@ -291,7 +279,7 @@ function SearchPageInner() {
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline pointer-events-none" />
             </div>
           </div>
 
@@ -299,57 +287,47 @@ function SearchPageInner() {
             <div className="space-y-4">
               {results.map((result) => (
                 <div key={result.slug}
-                  className="bg-white rounded-2xl p-5 shadow-card hover:shadow-card-hover transition-all duration-300 group"
-                  style={{ border: '1px solid #e5e1d8' }}
-                  onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(200,169,110,0.30)'}
-                  onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.borderColor = '#e5e1d8'}>
+                  className="bg-surface-container-lowest rounded-xl p-5 shadow-card hover:shadow-card-hover transition-all duration-300 border border-outline-variant/20 hover:border-secondary/30 group">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: 'rgba(10,15,30,0.05)' }}>
-                      <BarChart2 className="w-5 h-5" style={{ color: '#0a0f1e' }} />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/8">
+                      <BarChart2 className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-dm font-bold text-white ${
-                          result.type === 'Databook' ? 'bg-[#6366f1]' :
-                          result.type === 'Statistics' ? 'bg-[#059669]' : 'bg-[#0a0f1e]'
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-body font-bold text-white ${
+                          result.type === 'Databook' ? 'bg-tertiary' :
+                          result.type === 'Statistics' ? 'bg-secondary' : 'bg-primary'
                         }`}>
                           {result.type}
                         </span>
-                        <span className="text-xs font-dm text-gray-400">{result.industry}</span>
-                        <span className="text-gray-200">·</span>
-                        <span className="text-xs font-dm text-gray-400">{result.subIndustry}</span>
+                        <span className="text-xs font-body text-on-surface-variant">{result.industry}</span>
+                        <span className="text-outline">·</span>
+                        <span className="text-xs font-body text-on-surface-variant">{result.subIndustry}</span>
                       </div>
                       <Link
                         href={`/outlook/${result.slug}/global`}
-                        className="font-sora font-semibold text-sm leading-snug block mb-2 transition-colors"
-                        style={{ color: '#0a0f1e' }}
-                        onMouseEnter={e => (e.currentTarget.style.color = '#c8a96e')}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#0a0f1e')}>
+                        className="font-headline font-semibold text-sm leading-snug block mb-2 text-primary hover:text-secondary transition-colors">
                         Global {result.title} Market Outlook, {result.yearStart}–{result.yearEnd}
                       </Link>
-                      <p className="text-xs font-dm text-gray-500 mb-3 line-clamp-2">{result.description}</p>
-                      <div className="flex items-center flex-wrap gap-4 text-xs font-dm text-gray-400">
-                        <span>Revenue: <strong style={{ color: '#0a0f1e' }}>${result.revenue}B</strong></span>
-                        <span>Forecast: <strong style={{ color: '#0a0f1e' }}>${result.forecast}B</strong></span>
+                      <p className="text-xs font-body text-on-surface-variant mb-3 line-clamp-2">{result.description}</p>
+                      <div className="flex items-center flex-wrap gap-4 text-xs font-body text-on-surface-variant">
+                        <span>Revenue: <strong className="text-primary">${result.revenue}B</strong></span>
+                        <span>Forecast: <strong className="text-primary">${result.forecast}B</strong></span>
                         <span className="inline-flex items-center gap-1">
                           CAGR:
-                          <strong className="inline-flex items-center gap-0.5" style={{ color: '#059669' }}>
+                          <strong className="inline-flex items-center gap-0.5 text-secondary">
                             <TrendingUp className="w-3 h-3" />
                             {result.cagr}%
                           </strong>
                         </span>
-                        <span>Segments: <strong style={{ color: '#0a0f1e' }}>{result.segments.length}</strong></span>
+                        <span>Segments: <strong className="text-primary">{result.segments.length}</strong></span>
                       </div>
-                      <div className="flex items-center gap-3 mt-3 pt-3" style={{ borderTop: '1px solid #f0ece4' }}>
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface-container">
                         {['Overview', 'Statistics', 'View Full Report'].map((link, i) => (
                           <Link key={link} href={`/outlook/${result.slug}/global`}
-                            className={`text-xs font-dm font-medium transition-colors ${
-                              i === 2 ? 'font-semibold' : ''
-                            }`}
-                            style={{ color: i === 2 ? '#c8a96e' : '#9ca3af' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#c8a96e')}
-                            onMouseLeave={e => (e.currentTarget.style.color = i === 2 ? '#c8a96e' : '#9ca3af')}>
+                            className={`text-xs font-body font-medium transition-colors ${
+                              i === 2 ? 'text-secondary font-semibold hover:text-on-secondary-fixed-variant' : 'text-on-surface-variant hover:text-secondary'
+                            }`}>
                             {link}
                           </Link>
                         ))}
@@ -361,14 +339,12 @@ function SearchPageInner() {
             </div>
           ) : (
             /* Empty state */
-            <div className="text-center py-20 bg-white rounded-2xl shadow-card"
-              style={{ border: '1px solid #e5e1d8' }}>
-              <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5"
-                style={{ background: 'rgba(10,15,30,0.05)' }}>
-                <Search className="w-9 h-9" style={{ color: 'rgba(10,15,30,0.25)' }} />
+            <div className="text-center py-20 bg-surface-container-lowest rounded-xl shadow-card border border-outline-variant/20">
+              <div className="w-20 h-20 rounded-xl flex items-center justify-center mx-auto mb-5 bg-surface-container">
+                <Search className="w-9 h-9 text-outline" />
               </div>
-              <h3 className="font-sora font-semibold text-lg mb-2" style={{ color: '#0a0f1e' }}>No results found</h3>
-              <p className="font-dm text-gray-500 text-sm mb-5">Try a different search term or adjust your filters</p>
+              <h3 className="font-headline font-semibold text-lg text-primary mb-2">No results found</h3>
+              <p className="font-body text-on-surface-variant text-sm mb-5">Try a different search term or adjust your filters</p>
               <button onClick={clearAll} className="btn-outline text-xs px-4 py-2">Clear all filters</button>
             </div>
           )}
@@ -381,9 +357,8 @@ function SearchPageInner() {
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-surface-app flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: '#c8a96e', borderTopColor: 'transparent' }} />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <SearchPageInner />

@@ -25,27 +25,26 @@ export default function ProfilePage() {
   const [inviteEmail, setInviteEmail] = useState('')
 
   return (
-    <div className="min-h-screen bg-surface-app">
-      <div className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-background">
+      <div className="bg-surface-container-lowest border-b border-surface-container-high">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-sora font-bold"
-              style={{ background: '#4f46e5' }}>
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl font-headline font-bold bg-tertiary">
               JD
             </div>
             <div>
-              <h1 className="font-sora font-bold text-xl text-brand-primary">John Doe</h1>
-              <p className="font-dm text-sm text-gray-500">john.doe@company.com · Free Plan</p>
+              <h1 className="font-headline font-bold text-xl text-primary">John Doe</h1>
+              <p className="font-body text-sm text-on-surface-variant">john.doe@company.com · Free Plan</p>
             </div>
           </div>
-          <div className="flex gap-0 border-t border-gray-100 -mb-px">
+          <div className="flex gap-0 border-t border-surface-container -mb-px">
             {tabs.map(tab => (
               <button key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-dm font-medium border-b-2 transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-body font-medium border-b-2 transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'border-brand-accent text-brand-accent'
-                    : 'border-transparent text-gray-500 hover:text-brand-primary'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-on-surface-variant hover:text-primary'
                 }`}>
                 <tab.icon className="w-3.5 h-3.5" />
                 {tab.label}
@@ -59,23 +58,23 @@ export default function ProfilePage() {
         {/* Profile Tab */}
         {activeTab === 'profile' && (
           <div className="max-w-2xl space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-card">
-              <h3 className="font-sora font-semibold text-base text-brand-primary mb-5">Personal Information</h3>
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
+              <h3 className="font-headline font-semibold text-base text-primary mb-5">Personal Information</h3>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 {[
                   { label: 'First Name', value: 'John', required: true },
                   { label: 'Last Name', value: 'Doe', required: true },
                 ].map(field => (
                   <div key={field.label}>
-                    <label className="block text-xs font-dm font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                      {field.label} {field.required && <span className="text-red-500">*</span>}
+                    <label className="block text-xs font-body font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">
+                      {field.label} {field.required && <span className="text-error">*</span>}
                     </label>
                     <input type="text" defaultValue={field.value} className="input-field" />
                   </div>
                 ))}
                 <div>
-                  <label className="block text-xs font-dm font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                    Phone <span className="text-red-500">*</span>
+                  <label className="block text-xs font-body font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">
+                    Phone <span className="text-error">*</span>
                   </label>
                   <div className="flex gap-2">
                     <select className="input-field w-24 shrink-0">
@@ -87,16 +86,16 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-dm font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                    Designation <span className="text-red-500">*</span>
+                  <label className="block text-xs font-body font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">
+                    Designation <span className="text-error">*</span>
                   </label>
                   <input type="text" placeholder="Senior Analyst" className="input-field" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-card">
-              <h3 className="font-sora font-semibold text-base text-brand-primary mb-5">Address Information</h3>
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
+              <h3 className="font-headline font-semibold text-base text-primary mb-5">Address Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { label: 'Address Line 1', span: 2 },
@@ -107,7 +106,7 @@ export default function ProfilePage() {
                   { label: 'Country', span: 1 },
                 ].map(field => (
                   <div key={field.label} className={field.span === 2 ? 'col-span-2' : ''}>
-                    <label className="block text-xs font-dm font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-body font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">
                       {field.label}
                     </label>
                     <input type="text" className="input-field" />
@@ -126,12 +125,12 @@ export default function ProfilePage() {
         {/* Password Tab */}
         {activeTab === 'password' && (
           <div className="max-w-md">
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-card">
-              <h3 className="font-sora font-semibold text-base text-brand-primary mb-5">Change Password</h3>
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
+              <h3 className="font-headline font-semibold text-base text-primary mb-5">Change Password</h3>
               <div className="space-y-4">
                 {['Current Password', 'New Password', 'Confirm New Password'].map((label, i) => (
                   <div key={label}>
-                    <label className="block text-xs font-dm font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-body font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5">
                       {label}
                     </label>
                     <div className="relative">
@@ -143,7 +142,7 @@ export default function ProfilePage() {
                       {i === 0 && (
                         <button onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <Eye className="w-4 h-4 text-gray-400" />
+                          <Eye className="w-4 h-4 text-outline" />
                         </button>
                       )}
                     </div>
@@ -158,13 +157,13 @@ export default function ProfilePage() {
         {/* Subscription Tab */}
         {activeTab === 'subscription' && (
           <div>
-            <div className="mb-6 p-4 rounded-2xl bg-white border border-gray-100 shadow-card flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(26,10,74,0.06)' }}>
-                <CreditCard className="w-5 h-5 text-brand-primary" />
+            <div className="mb-6 p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-card flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/8">
+                <CreditCard className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <div className="font-sora font-semibold text-sm text-brand-primary">Current Plan: Free</div>
-                <div className="font-dm text-xs text-gray-500">Upgrade to unlock more features</div>
+                <div className="font-headline font-semibold text-sm text-primary">Current Plan: Free</div>
+                <div className="font-body text-xs text-on-surface-variant">Upgrade to unlock more features</div>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-center">
@@ -178,9 +177,9 @@ export default function ProfilePage() {
         {/* Payments Tab */}
         {activeTab === 'payments' && (
           <div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
-              <div className="p-5 border-b border-gray-100">
-                <h3 className="font-sora font-semibold text-base text-brand-primary">Payment History</h3>
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card overflow-hidden">
+              <div className="p-5 border-b border-surface-container">
+                <h3 className="font-headline font-semibold text-base text-primary">Payment History</h3>
               </div>
               {invoices.length > 0 ? (
                 <table className="data-table w-full">
@@ -196,14 +195,14 @@ export default function ProfilePage() {
                   <tbody>
                     {invoices.map((inv, i) => (
                       <tr key={i}>
-                        <td className="font-dm text-gray-600">{inv.date}</td>
-                        <td className="font-dm text-gray-600">{inv.plan}</td>
-                        <td className="font-dm font-semibold text-brand-primary">{inv.amount}</td>
+                        <td className="font-body text-on-surface-variant">{inv.date}</td>
+                        <td className="font-body text-on-surface-variant">{inv.plan}</td>
+                        <td className="font-body font-semibold text-primary">{inv.amount}</td>
                         <td>
                           <span className="stat-badge bg-green-100 text-green-700">{inv.status}</span>
                         </td>
                         <td>
-                          <button className="flex items-center gap-1 text-xs font-dm font-medium text-brand-accent hover:text-brand-secondary transition-colors">
+                          <button className="flex items-center gap-1 text-xs font-body font-medium text-secondary hover:text-on-secondary-fixed-variant transition-colors">
                             <Download className="w-3 h-3" />
                             PDF
                           </button>
@@ -214,8 +213,8 @@ export default function ProfilePage() {
                 </table>
               ) : (
                 <div className="py-16 text-center">
-                  <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                  <p className="font-dm text-sm text-gray-500">No invoices yet</p>
+                  <FileText className="w-10 h-10 text-outline mx-auto mb-3" />
+                  <p className="font-body text-sm text-on-surface-variant">No invoices yet</p>
                 </div>
               )}
             </div>
@@ -225,9 +224,9 @@ export default function ProfilePage() {
         {/* Invite Tab */}
         {activeTab === 'invite' && (
           <div className="max-w-lg">
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-card">
-              <h3 className="font-sora font-semibold text-base text-brand-primary mb-2">Invite Colleagues</h3>
-              <p className="font-dm text-sm text-gray-500 mb-5">Share Horizon Intelligence with your team members.</p>
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
+              <h3 className="font-headline font-semibold text-base text-primary mb-2">Invite Colleagues</h3>
+              <p className="font-body text-sm text-on-surface-variant mb-5">Share Horizon Intelligence with your team members.</p>
               <div className="flex gap-3">
                 <input
                   type="email"
@@ -239,10 +238,10 @@ export default function ProfilePage() {
                 <button className="btn-primary shrink-0">Send Invite</button>
               </div>
               <div className="mt-6">
-                <h4 className="font-sora font-semibold text-xs uppercase tracking-wider text-gray-400 mb-3">Pending Invites</h4>
-                <div className="text-center py-8 text-gray-400">
-                  <Users className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                  <p className="font-dm text-sm">No pending invites</p>
+                <h4 className="font-headline font-semibold text-xs uppercase tracking-wider text-on-surface-variant mb-3">Pending Invites</h4>
+                <div className="text-center py-8 text-on-surface-variant">
+                  <Users className="w-8 h-8 mx-auto mb-2 text-outline" />
+                  <p className="font-body text-sm">No pending invites</p>
                 </div>
               </div>
             </div>

@@ -36,21 +36,21 @@ export default function CompaniesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-app">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface-container-lowest border-b border-surface-container-high">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h1 className="font-sora font-bold text-2xl text-brand-primary">Company Directory</h1>
-              <p className="font-dm text-sm text-gray-500 mt-1">{mockCompanies.length}+ global company profiles</p>
+              <h1 className="font-headline font-bold text-2xl text-primary">Company Directory</h1>
+              <p className="font-body text-sm text-on-surface-variant mt-1">{mockCompanies.length}+ global company profiles</p>
             </div>
           </div>
 
           {/* Filters */}
           <div className="grid grid-cols-[1fr,auto,auto,auto,auto] gap-3 items-end">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
               <input
                 type="text"
                 value={search}
@@ -74,12 +74,12 @@ export default function CompaniesPage() {
                     <option key={opt} value={opt === 'All Sectors' || opt === 'All Industries' ? '' : opt}>{opt}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline pointer-events-none" />
               </div>
             ))}
             <button
               onClick={() => { setSearch(''); setSector(''); setIndustry(''); setSortBy('latest') }}
-              className="btn-ghost border border-gray-200 rounded-xl">
+              className="btn-ghost border border-outline-variant rounded-xl">
               Reset
             </button>
           </div>
@@ -88,11 +88,11 @@ export default function CompaniesPage() {
 
       {/* Table */}
       <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
-          <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-            <span className="font-dm text-sm text-gray-500">
-              Showing <strong className="text-brand-primary">{paginated.length}</strong> of{' '}
-              <strong className="text-brand-primary">{filtered.length}</strong> companies
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card overflow-hidden">
+          <div className="p-4 border-b border-surface-container flex items-center justify-between">
+            <span className="font-body text-sm text-on-surface-variant">
+              Showing <strong className="text-primary">{paginated.length}</strong> of{' '}
+              <strong className="text-primary">{filtered.length}</strong> companies
             </span>
           </div>
           <table className="data-table w-full">
@@ -115,32 +115,31 @@ export default function CompaniesPage() {
                     <td>
                       <Link href={`/companies/${company.slug}`}
                         className="flex items-center gap-3 group">
-                        <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-sora font-bold text-white shrink-0"
-                          style={{ background: '#111115' }}>
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-headline font-bold text-white shrink-0 bg-primary">
                           {company.name[0]}
                         </div>
                         <div>
-                          <div className="font-dm font-semibold text-brand-primary group-hover:text-brand-accent transition-colors text-sm">
+                          <div className="font-body font-semibold text-primary group-hover:text-secondary transition-colors text-sm">
                             {company.name}
                           </div>
                           {company.foundedYear && (
-                            <div className="text-[10px] font-dm text-gray-400">Est. {company.foundedYear}</div>
+                            <div className="text-[10px] font-body text-on-surface-variant">Est. {company.foundedYear}</div>
                           )}
                         </div>
                       </Link>
                     </td>
                     <td>
-                      <div className="flex items-center gap-1 text-gray-600 text-sm">
-                        <MapPin className="w-3 h-3 text-gray-400" />
+                      <div className="flex items-center gap-1 text-on-surface-variant text-sm">
+                        <MapPin className="w-3 h-3 text-outline" />
                         {company.hq}
                       </div>
                     </td>
-                    <td><span className="text-sm font-dm text-gray-600">{company.sector}</span></td>
-                    <td><span className="text-sm font-dm text-gray-600">{company.industry}</span></td>
-                    <td><span className="text-sm font-dm font-semibold text-brand-primary">{company.revenue}</span></td>
+                    <td><span className="text-sm font-body text-on-surface-variant">{company.sector}</span></td>
+                    <td><span className="text-sm font-body text-on-surface-variant">{company.industry}</span></td>
+                    <td><span className="text-sm font-body font-semibold text-primary">{company.revenue}</span></td>
                     <td>
-                      <div className="flex items-center gap-1 text-sm font-dm text-gray-600">
-                        <Users className="w-3 h-3 text-gray-400" />
+                      <div className="flex items-center gap-1 text-sm font-body text-on-surface-variant">
+                        <Users className="w-3 h-3 text-outline" />
                         {company.employees}
                       </div>
                     </td>
@@ -157,32 +156,31 @@ export default function CompaniesPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="p-4 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs font-dm text-gray-500">
+            <div className="p-4 border-t border-surface-container flex items-center justify-between">
+              <span className="text-xs font-body text-on-surface-variant">
                 Page {page} of {totalPages}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="p-1.5 rounded-lg border border-gray-200 hover:border-brand-accent disabled:opacity-40 transition-colors">
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
+                  className="p-1.5 rounded-lg border border-outline-variant hover:border-secondary disabled:opacity-40 transition-colors">
+                  <ChevronLeft className="w-4 h-4 text-on-surface-variant" />
                 </button>
                 {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(p => (
                   <button key={p}
                     onClick={() => setPage(p)}
-                    className={`w-8 h-8 rounded-lg text-xs font-dm font-medium transition-colors ${
-                      p === page ? 'text-white' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    style={p === page ? { background: '#111115' } : {}}>
+                    className={`w-8 h-8 rounded-lg text-xs font-body font-medium transition-colors ${
+                      p === page ? 'bg-primary text-white' : 'text-on-surface-variant hover:bg-surface-container'
+                    }`}>
                     {p}
                   </button>
                 ))}
                 <button
                   onClick={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="p-1.5 rounded-lg border border-gray-200 hover:border-brand-accent disabled:opacity-40 transition-colors">
-                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                  className="p-1.5 rounded-lg border border-outline-variant hover:border-secondary disabled:opacity-40 transition-colors">
+                  <ChevronRight className="w-4 h-4 text-on-surface-variant" />
                 </button>
               </div>
             </div>

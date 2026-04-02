@@ -10,48 +10,44 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen page-content">
       {/* Hero */}
-      <section className="relative py-16 overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0f2044 60%, #0d1a38 100%)' }}>
+      <section className="relative py-16 overflow-hidden bg-primary">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full"
-            style={{ background: 'rgba(99,102,241,0.08)', filter: 'blur(60px)' }} />
+            style={{ background: 'rgba(0,106,97,0.12)', filter: 'blur(60px)' }} />
           <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full"
-            style={{ background: 'rgba(200,169,110,0.06)', filter: 'blur(50px)' }} />
+            style={{ background: 'rgba(28,0,72,0.15)', filter: 'blur(50px)' }} />
         </div>
         <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-dm font-semibold mb-6"
-            style={{ background: 'rgba(200,169,110,0.12)', border: '1px solid rgba(200,169,110,0.25)', color: '#c8a96e' }}>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-body font-semibold mb-6 bg-secondary/15 border border-secondary/25 text-secondary-fixed">
             Simple, Transparent Pricing
           </div>
-          <h1 className="font-sora font-bold text-4xl text-white mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <h1 className="font-headline font-bold text-4xl text-white mb-4" style={{ letterSpacing: '-0.02em' }}>
             Plans &amp; Pricing
           </h1>
-          <p className="font-dm text-base mb-2" style={{ color: 'rgba(255,255,255,0.60)' }}>
+          <p className="font-body text-base mb-2 text-white/60">
             Choose the plan that fits your research needs. Start free, scale as you grow.
           </p>
-          <p className="font-dm text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="font-body text-sm text-white/35">
             All plans include a 14-day free trial. No credit card required.
           </p>
         </div>
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-12" style={{ background: '#0f0f14' }}>
+      <section className="py-12 bg-primary-container">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-center">
             {pricingPlans.map(plan => (
               <PricingCard key={plan.id} plan={plan} />
             ))}
           </div>
-          <div className="text-center mt-12 p-8 rounded-2xl"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <h3 className="font-sora font-bold text-xl text-white mb-2">Need a Custom Plan?</h3>
-            <p className="font-dm text-sm mb-5 max-w-lg mx-auto" style={{ color: 'rgba(255,255,255,0.50)' }}>
+          <div className="text-center mt-12 p-8 rounded-2xl bg-white/5 border border-white/10">
+            <h3 className="font-headline font-bold text-xl text-white mb-2">Need a Custom Plan?</h3>
+            <p className="font-body text-sm mb-5 max-w-lg mx-auto text-white/50">
               The price packages don&apos;t meet your needs? Tell us more &amp; our analysts will custom build a package for you.
             </p>
             <Link href="#"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-dm font-semibold transition-all hover:shadow-[0_0_20px_rgba(200,169,110,0.25)] active:scale-[0.97]"
-              style={{ background: '#c8a96e', color: '#0a0f1e' }}>
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-body font-semibold transition-all bg-secondary text-white hover:opacity-90 active:scale-[0.97]">
               Custom Pricing
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -60,25 +56,21 @@ export default function PricingPage() {
       </section>
 
       {/* Feature Comparison Table */}
-      <section className="py-14" style={{ background: '#f8f7f4', borderTop: '1px solid #e5e1d8', borderBottom: '1px solid #e5e1d8' }}>
+      <section className="py-14 bg-background border-y border-surface-container-high">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-10">
-            <h2 className="font-sora font-bold text-2xl mb-2" style={{ color: '#0a0f1e' }}>Compare Plans</h2>
-            <p className="font-dm text-sm text-gray-500">Full feature breakdown across all plans</p>
+            <h2 className="font-headline font-bold text-2xl text-primary mb-2">Compare Plans</h2>
+            <p className="font-body text-sm text-on-surface-variant">Full feature breakdown across all plans</p>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl shadow-card" style={{ border: '1px solid #e5e1d8' }}>
-            <table className="w-full text-sm font-dm">
+          <div className="overflow-x-auto rounded-xl shadow-card border border-outline-variant/20">
+            <table className="w-full text-sm font-body">
               <thead>
-                <tr style={{ borderBottom: '1px solid #e5e1d8' }}>
-                  <th className="text-left px-6 py-4 font-sora font-semibold text-gray-600 w-1/3"
-                    style={{ background: '#f8f7f4' }}>Feature</th>
+                <tr className="border-b border-outline-variant/30">
+                  <th className="text-left px-6 py-4 font-headline font-semibold text-on-surface-variant w-1/3 bg-surface-container-low">Feature</th>
                   {pricingPlans.map(plan => (
-                    <th key={plan.id} className="px-4 py-4 font-sora font-semibold text-center"
-                      style={{
-                        background: '#f8f7f4',
-                        color: plan.highlighted ? '#c8a96e' : '#0a0f1e',
-                      }}>
+                    <th key={plan.id} className="px-4 py-4 font-headline font-semibold text-center bg-surface-container-low"
+                      style={{ color: plan.highlighted ? '#006a61' : '#091426' }}>
                       {plan.name}
                     </th>
                   ))}
@@ -96,18 +88,15 @@ export default function PricingPage() {
                   { label: 'API Access', values: ['—', '—', 'Beta', 'Full'] },
                   { label: 'Users', values: ['1', '1', '2', '10+'] },
                 ].map((row, i) => (
-                  <tr key={i} className={i % 2 === 0 ? '' : ''}
-                    style={{
-                      borderBottom: '1px solid #f0ece4',
-                      background: i % 2 === 0 ? '#ffffff' : 'rgba(248,247,244,0.5)',
-                    }}>
-                    <td className="px-6 py-3.5 font-medium" style={{ color: '#374151' }}>{row.label}</td>
+                  <tr key={i} className="border-b border-outline-variant/15 last:border-0"
+                    style={{ background: i % 2 === 0 ? '#ffffff' : 'rgba(242,244,246,0.5)' }}>
+                    <td className="px-6 py-3.5 font-medium text-on-surface">{row.label}</td>
                     {row.values.map((val, j) => (
-                      <td key={j} className="px-4 py-3.5 text-center text-gray-600">
+                      <td key={j} className="px-4 py-3.5 text-center text-on-surface-variant">
                         {val === '—' ? (
-                          <span style={{ color: '#d1c9bc' }}>—</span>
+                          <span className="text-outline">—</span>
                         ) : (
-                          <span style={pricingPlans[j].highlighted ? { color: '#c8a96e', fontWeight: 600 } : {}}>{val}</span>
+                          <span className={pricingPlans[j].highlighted ? 'text-secondary font-semibold' : ''}>{val}</span>
                         )}
                       </td>
                     ))}
@@ -120,7 +109,7 @@ export default function PricingPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-16" style={{ background: '#0a0f1e' }}>
+      <section className="py-16 bg-primary">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map(stat => (
@@ -131,37 +120,31 @@ export default function PricingPage() {
       </section>
 
       {/* Testimonials — dark section */}
-      <section style={{ background: '#0a0f1e' }} className="pb-16 pt-4">
+      <section className="pb-16 pt-4 bg-primary">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-10">
-            <h2 className="font-sora font-bold text-2xl text-white mb-2">What Our Customers Say</h2>
-            <p className="font-dm text-sm" style={{ color: 'rgba(255,255,255,0.40)' }}>Trusted by market leaders across industries</p>
+            <h2 className="font-headline font-bold text-2xl text-white mb-2">What Our Customers Say</h2>
+            <p className="font-body text-sm text-white/40">Trusted by market leaders across industries</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
-              <div key={i} className="rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1"
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}>
+              <div key={i} className="rounded-xl p-6 transition-all duration-300 hover:-translate-y-1 bg-white/5 border border-white/10">
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, si) => (
-                    <Star key={si} className="w-3.5 h-3.5 fill-[#c8a96e] text-[#c8a96e]" />
+                    <Star key={si} className="w-3.5 h-3.5 fill-secondary-fixed text-secondary-fixed" />
                   ))}
                 </div>
-                <blockquote className="font-dm text-sm leading-relaxed mb-5 italic"
-                  style={{ color: 'rgba(255,255,255,0.72)' }}>
+                <blockquote className="font-body text-sm leading-relaxed mb-5 italic text-white/72">
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-sora font-bold shrink-0"
-                    style={{ background: '#0f2044', outline: '2px solid rgba(200,169,110,0.25)', outlineOffset: '2px' }}>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-headline font-bold shrink-0 bg-primary-container border-2 border-secondary/25">
                     {t.avatar}
                   </div>
                   <div>
-                    <div className="font-sora font-semibold text-sm text-white">{t.name}</div>
-                    <div className="font-dm text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>
-                      {t.title} · <span style={{ color: '#c8a96e' }}>{t.company}</span>
+                    <div className="font-headline font-semibold text-sm text-white">{t.name}</div>
+                    <div className="font-body text-xs text-white/40">
+                      {t.title} · <span className="text-secondary-fixed">{t.company}</span>
                     </div>
                   </div>
                 </div>
@@ -172,10 +155,10 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ CTA */}
-      <section className="py-12" style={{ background: '#f8f7f4', borderTop: '1px solid #e5e1d8' }}>
+      <section className="py-12 bg-background border-t border-surface-container-high">
         <div className="max-w-2xl mx-auto px-6 text-center">
-          <h3 className="font-sora font-bold text-xl mb-3" style={{ color: '#0a0f1e' }}>Still have questions?</h3>
-          <p className="font-dm text-sm text-gray-500 mb-6">Our team is ready to help you find the right plan for your needs.</p>
+          <h3 className="font-headline font-bold text-xl text-primary mb-3">Still have questions?</h3>
+          <p className="font-body text-sm text-on-surface-variant mb-6">Our team is ready to help you find the right plan for your needs.</p>
           <div className="flex justify-center gap-4">
             <Link href="#" className="btn-primary">Talk to Sales</Link>
             <Link href="#" className="btn-outline">View FAQ</Link>

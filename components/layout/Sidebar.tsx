@@ -8,8 +8,8 @@ import { useUIStore } from '@/store/ui-store'
 import {
   Home, BarChart2, Clock, BookOpen, Building2, Settings,
   Lightbulb, CreditCard, ChevronDown, ChevronRight,
-  ChevronLeft, Activity, TrendingUp, FileText, Contact,
-  ClipboardList, Layers
+  ChevronLeft, TrendingUp, Contact, ClipboardList,
+  Zap, LogOut, HelpCircle
 } from 'lucide-react'
 
 const navItems = [
@@ -82,35 +82,22 @@ export default function Sidebar() {
   return (
     <div
       className={cn(
-        'flex flex-col h-full transition-all duration-300 ease-in-out relative overflow-hidden',
+        'flex flex-col h-full transition-all duration-300 ease-in-out relative overflow-hidden bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800',
         collapsed ? 'w-16' : 'w-[220px]'
       )}
-      style={{
-        background: 'linear-gradient(180deg, #0a0f1e 0%, #0d1426 100%)',
-        boxShadow: '4px 0 24px rgba(0,0,0,0.35)',
-        borderRight: '1px solid rgba(200,169,110,0.18)',
-      }}
     >
-      {/* Top gradient accent */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#c8a96e]/30 to-transparent" />
-
       {/* Logo Area */}
       <div className={cn(
-        'flex items-center border-b border-white/[0.07] shrink-0',
-        collapsed ? 'justify-center py-4 px-2' : 'px-5 py-4 gap-3'
+        'flex items-center shrink-0 border-b border-slate-200 dark:border-slate-800',
+        collapsed ? 'justify-center py-4 px-2' : 'px-4 py-4 gap-3'
       )}>
-        <div
-          className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-          style={{
-            background: 'linear-gradient(135deg, #c8a96e, #b8924f)',
-            boxShadow: '0 0 20px rgba(200,169,110,0.15)',
-          }}>
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 bg-primary">
           <TrendingUp className="w-4 h-4 text-white" strokeWidth={2.5} />
         </div>
         {!collapsed && (
           <div>
-            <span className="font-sora font-bold text-white text-sm tracking-tight">Horizon</span>
-            <span className="block text-[10px] text-white/40 font-dm -mt-0.5">Intelligence</span>
+            <span className="font-headline font-extrabold text-slate-900 dark:text-white text-sm tracking-tight">The Curator</span>
+            <span className="block text-[10px] text-slate-500 font-medium -mt-0.5">Premium Insights</span>
           </div>
         )}
       </div>
@@ -127,24 +114,23 @@ export default function Sidebar() {
             <div key={item.label}>
               <div
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-dm font-medium cursor-pointer transition-colors duration-150 group relative',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200 group relative',
                   active
-                    ? 'text-white border-l-2 border-[#c8a96e]'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'text-slate-900 dark:text-white font-bold bg-white dark:bg-slate-800 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/30 hover:translate-x-1'
                 )}
-                style={active ? { background: 'rgba(200,169,110,0.08)' } : {}}
                 onClick={() => {
                   if (hasChildren && !collapsed) toggleExpand(item.label)
                 }}
               >
-                <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#c8a96e]' : '')} />
+                <Icon className="w-4 h-4 shrink-0" />
                 {!collapsed && (
                   <>
-                    <Link href={item.href} className="flex-1" onClick={e => hasChildren && e.preventDefault()}>
+                    <Link href={item.href} className="flex-1 font-inter text-sm" onClick={e => hasChildren && e.preventDefault()}>
                       {item.label}
                     </Link>
                     {hasChildren && (
-                      <span className="ml-auto text-white/30">
+                      <span className="ml-auto text-slate-400">
                         {isExpanded
                           ? <ChevronDown className="w-3.5 h-3.5" />
                           : <ChevronRight className="w-3.5 h-3.5" />}
@@ -154,8 +140,7 @@ export default function Sidebar() {
                 )}
                 {/* Tooltip on collapsed */}
                 {collapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-xs"
-                    style={{ background: '#0a0f1e', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div className="absolute left-full ml-2 px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-xs bg-slate-900 text-white">
                     {item.label}
                   </div>
                 )}
@@ -171,10 +156,10 @@ export default function Sidebar() {
                         key={child.label}
                         href={child.href}
                         className={cn(
-                          'block px-3 py-1.5 text-xs font-dm rounded-md transition-colors',
+                          'block px-3 py-1.5 text-xs font-inter rounded-lg transition-colors',
                           childActive
-                            ? 'text-[#c8a96e]'
-                            : 'text-[#94a3b8] hover:text-white/90 hover:bg-white/5'
+                            ? 'text-primary font-semibold bg-white dark:bg-slate-800'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/40'
                         )}
                       >
                         {child.label}
@@ -188,35 +173,46 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Plan Badge — frosted glass */}
-      {!collapsed && (
-        <div className="mx-3 mb-2 p-3 rounded-xl backdrop-blur-sm"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-          }}>
-          <div className="text-xs font-dm text-white/40 mb-1">Current Plan</div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-sora font-semibold text-white">Free Plan</span>
-            <Link href="/pricing" className="text-xs font-dm font-medium text-[#c8a96e] hover:text-white transition-colors">
-              Upgrade →
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* CTA Button + Footer links */}
+      <div className="mt-auto border-t border-slate-200 dark:border-slate-800 p-3 space-y-1">
+        {!collapsed && (
+          <button className="w-full bg-primary text-white py-2.5 rounded-xl mb-3 font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-[0.98]">
+            <Zap className="w-4 h-4" />
+            Ask Insights
+          </button>
+        )}
+        <Link
+          href="#"
+          className={cn(
+            'flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 rounded-xl transition-all text-sm',
+            collapsed && 'justify-center'
+          )}
+        >
+          <HelpCircle className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="font-inter font-medium">Support</span>}
+        </Link>
+        <Link
+          href="#"
+          className={cn(
+            'flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 rounded-xl transition-all text-sm',
+            collapsed && 'justify-center'
+          )}
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="font-inter font-medium">Sign Out</span>}
+        </Link>
 
-      {/* Collapse Toggle */}
-      <div className="p-2 border-t border-white/[0.07]">
+        {/* Collapse Toggle */}
         <button
           onClick={() => toggleSidebar()}
           className={cn(
-            'flex items-center justify-center w-full py-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors duration-150',
+            'flex items-center justify-center w-full py-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors duration-150',
             collapsed ? 'px-2' : 'gap-2 px-3'
           )}
         >
           {collapsed
             ? <ChevronRight className="w-4 h-4" />
-            : <><ChevronLeft className="w-4 h-4" /><span className="text-xs font-dm">Collapse</span></>
+            : <><ChevronLeft className="w-4 h-4" /><span className="text-xs font-inter">Collapse</span></>
           }
         </button>
       </div>

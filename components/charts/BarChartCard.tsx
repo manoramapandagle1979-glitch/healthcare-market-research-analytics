@@ -19,9 +19,9 @@ interface BarChartCardProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-brand-primary text-white px-3 py-2 rounded-lg text-sm font-dm shadow-xl">
+      <div className="bg-primary text-white px-3 py-2 rounded-lg text-sm font-body shadow-xl">
         <div className="font-semibold mb-0.5">{label}</div>
-        <div className="text-brand-accent font-bold">US$ {payload[0].value.toFixed(1)}B</div>
+        <div className="text-secondary-fixed font-bold">US$ {payload[0].value.toFixed(1)}B</div>
       </div>
     )
   }
@@ -32,14 +32,14 @@ export default function BarChartCard({ title, data, unit = 'US$B', height = 300 
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5">
+    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card p-5">
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h3 className="font-sora font-semibold text-base text-brand-primary leading-tight">
+          <h3 className="font-headline font-semibold text-base text-primary leading-tight">
             {title}
           </h3>
-          <p className="text-xs font-dm text-gray-400 mt-0.5">{unit} · Click bars to explore</p>
+          <p className="text-xs font-body text-on-surface-variant mt-0.5">{unit} · Click bars to explore</p>
         </div>
 
         {/* Toolbar */}
@@ -54,7 +54,7 @@ export default function BarChartCard({ title, data, unit = 'US$B', height = 300 
             { icon: Download, label: 'Download' },
           ].map(({ icon: Icon, label }) => (
             <button key={label} title={label}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-brand-primary hover:bg-gray-100 transition-colors">
+              className="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container transition-colors">
               <Icon className="w-3.5 h-3.5" />
             </button>
           ))}
@@ -65,15 +65,15 @@ export default function BarChartCard({ title, data, unit = 'US$B', height = 300 
       <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}
           onMouseLeave={() => setActiveIndex(null)}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#eceef0" vertical={false} />
           <XAxis
             dataKey="year"
-            tick={{ fontSize: 11, fontFamily: 'Outfit', fill: '#9ca3af' }}
+            tick={{ fontSize: 11, fontFamily: 'Inter', fill: '#75777d' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 11, fontFamily: 'Outfit', fill: '#9ca3af' }}
+            tick={{ fontSize: 11, fontFamily: 'Inter', fill: '#75777d' }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v) => `$${v}B`}
@@ -84,7 +84,7 @@ export default function BarChartCard({ title, data, unit = 'US$B', height = 300 
             {data.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={activeIndex === index ? '#0d9488' : index >= data.findIndex(d => d.year === 2024) ? '#c8a96e' : '#0a0f1e'}
+                fill={activeIndex === index ? '#006a61' : index >= data.findIndex(d => d.year === 2024) ? '#86f2e4' : '#091426'}
                 opacity={activeIndex !== null && activeIndex !== index ? 0.6 : 1}
               />
             ))}
@@ -93,18 +93,18 @@ export default function BarChartCard({ title, data, unit = 'US$B', height = 300 
       </ResponsiveContainer>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
+      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-surface-container">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm" style={{ background: '#0a0f1e' }} />
-          <span className="text-xs font-dm text-gray-500">Historical</span>
+          <div className="w-3 h-3 rounded-sm bg-primary" />
+          <span className="text-xs font-body text-on-surface-variant">Historical</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm" style={{ background: '#c8a96e' }} />
-          <span className="text-xs font-dm text-gray-500">Forecast</span>
+          <div className="w-3 h-3 rounded-sm bg-secondary-container" />
+          <span className="text-xs font-body text-on-surface-variant">Forecast</span>
         </div>
         <div className="flex items-center gap-1.5 ml-auto">
-          <div className="w-3 h-3 rounded-sm" style={{ background: '#0d9488' }} />
-          <span className="text-xs font-dm text-gray-500">Active selection</span>
+          <div className="w-3 h-3 rounded-sm bg-secondary" />
+          <span className="text-xs font-body text-on-surface-variant">Active selection</span>
         </div>
       </div>
     </div>

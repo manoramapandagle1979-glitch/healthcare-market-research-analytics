@@ -12,40 +12,34 @@ const features = [
 
 export default function PipelinePage() {
   return (
-    <div className="min-h-screen bg-surface-app">
+    <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="relative overflow-hidden"
-        style={{ background: '#111115', minHeight: '400px' }}>
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-10"
-            style={{ background: 'transparent', filter: 'blur(60px)' }} />
-        </div>
+      <section className="relative overflow-hidden bg-primary" style={{ minHeight: '400px' }}>
         <div className="relative max-w-7xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-dm font-semibold text-white mb-6"
-              style={{ background: 'rgba(212, 135, 10, 0.2)', border: '1px solid rgba(212, 135, 10, 0.3)' }}>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-body font-semibold text-white mb-6 bg-secondary/20 border border-secondary/30">
               <Activity className="w-3 h-3" />
               Horizon Pipeline
             </div>
-            <h1 className="font-sora font-bold text-3xl text-white mb-4 leading-tight">
+            <h1 className="font-headline font-bold text-3xl text-white mb-4 leading-tight">
               Grand View Pipeline
-              <span className="block text-brand-accent">Supply Chain Intelligence</span>
+              <span className="block text-secondary-fixed">Supply Chain Intelligence</span>
             </h1>
-            <p className="font-dm text-white/70 text-base mb-3 leading-relaxed">
+            <p className="font-body text-white/70 text-base mb-3 leading-relaxed">
               Build a smart, robust and reliable supply chain with real-time intelligence across global markets.
             </p>
-            <p className="font-dm text-white/50 text-sm mb-8 leading-relaxed">
+            <p className="font-body text-white/50 text-sm mb-8 leading-relaxed">
               Access comprehensive supply chain data covering raw material sourcing, manufacturing capacity,
               distribution networks, and logistics performance across 180+ countries.
             </p>
             <div className="flex gap-3">
               <Link href="/pricing"
-                className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-dm font-bold text-brand-primary bg-brand-accent hover:opacity-90 transition-all">
+                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-body font-bold text-white bg-secondary hover:opacity-90 transition-all">
                 Access Reports
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link href="#"
-                className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-dm font-medium text-white border border-white/30 hover:bg-white/10 transition-all">
+                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-body font-medium text-white border border-white/30 hover:bg-white/10 transition-all">
                 Talk to an Expert
               </Link>
             </div>
@@ -54,9 +48,8 @@ export default function PipelinePage() {
           {/* Circular Wheel Diagram */}
           <div className="flex items-center justify-center">
             <div className="relative w-64 h-64">
-              {/* Outer ring segments */}
               {[
-                { label: 'Regulation Adherence', angle: 0, color: '#d4870a' },
+                { label: 'Regulation Adherence', angle: 0, color: '#006a61' },
                 { label: 'Financial Performance', angle: 60, color: '#4f46e5' },
                 { label: 'Sustainability', angle: 120, color: '#059669' },
                 { label: 'Scalability', angle: 180, color: '#1d4ed8' },
@@ -74,15 +67,14 @@ export default function PipelinePage() {
                       style={{ background: `${segment.color}20`, border: `2px solid ${segment.color}` }}>
                       <CheckCircle className="w-4 h-4" style={{ color: segment.color }} />
                     </div>
-                    <div className="text-[9px] font-dm font-medium text-white/70 leading-tight">{segment.label}</div>
+                    <div className="text-[9px] font-body font-medium text-white/70 leading-tight">{segment.label}</div>
                   </div>
                 )
               })}
               {/* Center */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center"
-                  style={{ background: '#d4870a' }}>
-                  <span className="font-sora font-bold text-white text-xs">PIPELINE</span>
+                <div className="w-20 h-20 rounded-full flex items-center justify-center bg-secondary">
+                  <span className="font-headline font-bold text-white text-xs">PIPELINE</span>
                 </div>
               </div>
             </div>
@@ -92,29 +84,28 @@ export default function PipelinePage() {
 
       {/* Features */}
       <section className="max-w-7xl mx-auto px-6 py-12">
-        <h2 className="font-sora font-bold text-xl text-brand-primary mb-6">Key Capabilities</h2>
+        <h2 className="font-headline font-bold text-xl text-primary mb-6">Key Capabilities</h2>
         <div className="grid md:grid-cols-2 gap-5">
           {features.map((feature, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-card hover:shadow-card-hover transition-all">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
-                style={{ background: 'rgba(212, 135, 10, 0.1)' }}>
-                <CheckCircle className="w-4 h-4 text-brand-accent" />
+            <div key={i} className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-5 shadow-card hover:shadow-card-hover transition-all">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-3 bg-secondary/10">
+                <CheckCircle className="w-4 h-4 text-secondary" />
               </div>
-              <h3 className="font-sora font-semibold text-sm text-brand-primary mb-2">{feature.title}</h3>
-              <p className="font-dm text-sm text-gray-600 leading-relaxed">{feature.desc}</p>
+              <h3 className="font-headline font-semibold text-sm text-primary mb-2">{feature.title}</h3>
+              <p className="font-body text-sm text-on-surface-variant leading-relaxed">{feature.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Markets We Cover */}
-      <section className="bg-white border-t border-gray-100 py-12">
+      <section className="bg-surface-container-lowest border-t border-surface-container py-12">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="font-sora font-bold text-xl text-brand-primary mb-6">Markets We Cover</h2>
+          <h2 className="font-headline font-bold text-xl text-primary mb-6">Markets We Cover</h2>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {markets.map(market => (
               <Link key={market} href="/industries"
-                className="flex items-center justify-center px-3 py-3 rounded-xl text-sm font-dm font-medium text-brand-primary bg-gray-50 border border-gray-200 hover:border-brand-accent hover:text-brand-accent hover:bg-brand-accent-light transition-all text-center">
+                className="flex items-center justify-center px-3 py-3 rounded-xl text-sm font-body font-medium text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:border-secondary hover:text-secondary transition-all text-center">
                 {market}
               </Link>
             ))}

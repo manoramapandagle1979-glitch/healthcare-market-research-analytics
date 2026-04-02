@@ -1,46 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Brand Colors */
-  --brand-primary:        #0a0f1e;
-  --brand-secondary:      #0f2044;
-  --brand-accent:         #c8a96e;
-  --brand-accent-hover:   #b8924f;
-  --brand-violet:         #6366f1;
-  --brand-teal:           #0d9488;
-  --brand-navy:           #0a0f1e;
+  /* ── Insight Architect tokens ── */
+  --primary:                    #091426;
+  --on-primary:                 #ffffff;
+  --primary-container:          #1e293b;
+  --secondary:                  #006a61;
+  --on-secondary:               #ffffff;
+  --secondary-container:        #86f2e4;
+  --tertiary:                   #1c0048;
+  --background:                 #f7f9fb;
+  --surface:                    #f7f9fb;
+  --on-surface:                 #191c1e;
+  --on-surface-variant:         #45474c;
+  --surface-container-lowest:   #ffffff;
+  --surface-container-low:      #f2f4f6;
+  --surface-container:          #eceef0;
+  --surface-container-high:     #e6e8ea;
+  --outline:                    #75777d;
+  --outline-variant:            #c5c6cd;
+
+  /* ── Legacy Brand Colors (backward compat) ── */
+  --brand-primary:        #091426;
+  --brand-secondary:      #1e293b;
+  --brand-accent:         #006a61;
+  --brand-accent-hover:   #005049;
+  --brand-violet:         #1c0048;
+  --brand-teal:           #006a61;
+  --brand-navy:           #091426;
 
   /* Backgrounds */
-  --bg-app:               #f8f7f4;
-  --bg-sidebar:           #0a0f1e;
+  --bg-app:               #f7f9fb;
+  --bg-sidebar:           #f1f5f9;
   --bg-card:              #ffffff;
-  --bg-card-hover:        #fdfcf9;
-  --bg-surface:           #f2f0eb;
-  --bg-hero:              linear-gradient(135deg, #0a0f1e 0%, #0f2044 50%, #0d1a38 100%);
+  --bg-card-hover:        #f7f9fb;
+  --bg-surface:           #f2f4f6;
+  --bg-hero:              linear-gradient(135deg, #091426 0%, #1e293b 50%, #0d1a38 100%);
 
   /* Typography */
-  --text-primary:         #0a0f1e;
-  --text-secondary:       #4b5563;
-  --text-muted:           #9ca3af;
-  --text-inverse:         #f8f7f4;
+  --text-primary:         #091426;
+  --text-secondary:       #45474c;
+  --text-muted:           #75777d;
+  --text-inverse:         #f7f9fb;
 
   /* Borders */
-  --border-light:         #e5e1d8;
-  --border-subtle:        #f0ece4;
+  --border-light:         #c5c6cd;
+  --border-subtle:        #e6e8ea;
 
   /* Status */
-  --success:              #059669;
+  --success:              #006a61;
   --warning:              #d97706;
-  --danger:               #dc2626;
+  --danger:               #ba1a1a;
 
   /* Chart palette */
-  --chart-primary:        #0a0f1e;
-  --chart-secondary:      #6366f1;
-  --chart-accent:         #c8a96e;
-  --chart-teal:           #0d9488;
+  --chart-primary:        #091426;
+  --chart-secondary:      #006a61;
+  --chart-accent:         #1c0048;
+  --chart-teal:           #006a61;
 
   --sidebar-width:        220px;
   --sidebar-collapsed:    64px;
@@ -58,36 +77,29 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-app);
-  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
   line-height: 1.6;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hero/Display headings: Fraunces for classy editorial feel */
-.hero-heading, h1.display {
-  font-family: 'Fraunces', Georgia, serif;
-  font-style: italic;
-  letter-spacing: -0.03em;
-}
-
-/* Section headings: Plus Jakarta Sans bold */
-h2, h3 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+/* Headings: Manrope (Insight Architect headline font) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: var(--text-primary);
+  color: var(--primary);
 }
 
-h1, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--text-primary);
+/* Legacy display heading class */
+.hero-heading, h1.display {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 /* Custom scrollbar */
@@ -106,7 +118,7 @@ h1, h4, h5, h6 {
   }
 
   .btn-accent {
-    @apply bg-[#c8a96e] text-[#0a0f1e] px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#b8924f] transition-all duration-200 shadow-sm active:scale-[0.97];
+    @apply bg-[#006a61] text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#005049] transition-all duration-200 shadow-sm active:scale-[0.97];
   }
 
   .btn-outline {
@@ -118,7 +130,7 @@ h1, h4, h5, h6 {
   }
 
   .card {
-    @apply bg-white rounded-2xl border border-[#e5e1d8] shadow-card hover:shadow-card-hover transition-all duration-300;
+    @apply bg-white rounded-xl border border-transparent shadow-card hover:shadow-card-hover transition-all duration-300;
   }
 
   .tag-chip {
@@ -150,15 +162,15 @@ h1, h4, h5, h6 {
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 border border-[#e5e1d8] rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#c8a96e]/30 focus:border-[#c8a96e] transition-all;
+    @apply w-full px-4 py-2.5 border-none rounded-xl text-sm bg-[#f2f4f6] focus:outline-none focus:ring-2 focus:ring-[#006a61]/20 transition-all;
   }
 
   .sidebar-item {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-150 cursor-pointer;
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-200/50 transition-all duration-200 cursor-pointer;
   }
 
   .sidebar-item.active {
-    @apply text-white bg-[rgba(200,169,110,0.08)] border-l-2 border-[#c8a96e];
+    @apply text-slate-900 bg-white shadow-sm font-bold;
   }
 
   .plan-gate-overlay {
@@ -265,7 +277,7 @@ h1, h4, h5, h6 {
 /* Smooth tab underline */
 .tab-active {
   position: relative;
-  color: var(--brand-accent);
+  color: var(--primary);
   font-weight: 600;
 }
 .tab-active::after {
@@ -275,7 +287,7 @@ h1, h4, h5, h6 {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--brand-accent);
+  background: var(--primary);
   border-radius: 2px;
 }
 
@@ -286,15 +298,28 @@ h1, h4, h5, h6 {
 }
 .count-up-enter { animation: countUp 0.6s ease-out forwards; }
 
-/* font-sora alias kept for backward compatibility */
+/* font-sora alias → Manrope (backward compatibility) */
 .font-sora {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-optical-sizing: auto;
+  font-family: 'Manrope', system-ui, sans-serif;
 }
 
-/* font-dm alias */
+/* font-dm alias → Inter (unchanged) */
 .font-dm {
-  font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Insight Architect font aliases */
+.font-headline {
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+.font-body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.font-manrope {
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+.font-inter {
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* Custom gold checkbox */

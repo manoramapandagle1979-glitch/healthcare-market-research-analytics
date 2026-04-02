@@ -9,7 +9,7 @@ export default function AstraPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-body font-semibold text-white mb-6 bg-secondary/20 border border-secondary/30">
               <Leaf className="w-3 h-3" />
-              Horizon Astra
+              Curator Astra
             </div>
             <h1 className="font-headline font-bold text-3xl text-white mb-4 leading-tight">
               ESG &amp; Sustainability<br />

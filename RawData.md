@@ -3,17 +3,187 @@ Project Overview
 Build a full-stack Market Research & Industry Statistics SaaS Portal — a modern, premium platform inspired by Grand View Horizon. The app must have rich data visualization, a multi-tier subscription model, AI-powered search, and a full authenticated user experience. The goal is to replicate the core architecture while making the UI/UX significantly more polished, interactive, and delightful.
 
 Tech Stack
-Frontend: Next.js 14 (App Router) + TypeScript
-Styling: Tailwind CSS + shadcn/ui + Framer Motion (animations)
-Charts: Recharts (primary) + D3.js (for complex visualizations)
-State Management: Zustand
-Auth: NextAuth.js (credentials + Google OAuth)
-Backend: Next.js API Routes + Prisma ORM
-Database: PostgreSQL (Supabase)
-Search: Algolia (or MeiliSearch self-hosted)
-File handling: AWS S3 / Cloudflare R2
-Payments: Stripe
-Email: Resend
+
+**Frontend (Analytics Portal):** Next.js 14 (App Router) + TypeScript
+**Styling:** Tailwind CSS + shadcn/ui + Framer Motion (animations)
+**Charts:** Recharts (primary) + D3.js (for complex visualizations)
+**State Management:** Zustand
+**Auth:** JWT-based (tokens from existing Go backend)
+**File handling:** Cloudflare R2 (via existing backend)
+**Payments:** Stripe + PayPal (via existing backend)
+**Email:** SMTP via gomail (handled by existing backend)
+
+**Existing Go Backend** (`healthcare-market-research-backend/`):
+- **Framework:** Go + Fiber v2
+- **Database:** PostgreSQL + GORM (auto-migrate)
+- **Caching:** Redis (optional, graceful degradation)
+- **Auth:** JWT (access + refresh tokens), role-based (admin/editor/viewer)
+- **File Storage:** Cloudflare R2
+- **Payments:** Stripe + PayPal (order creation, capture, webhooks)
+- **Email:** gomail.v2 SMTP
+- **Architecture:** Clean arch — domain → repository → service → handler
+- **API Base:** `http://localhost:8081/api/v1`
+
+> **IMPORTANT:** The backend already exists and is fully functional. The analytics portal is a **frontend-only** project that consumes the existing backend API. No new backend code is needed — only new API endpoints if the existing ones don't cover a specific need.
+
+---
+
+## Existing Backend API Endpoints (Available)
+
+### Authentication
+- `POST /api/v1/auth/login` — JWT login (returns access_token + refresh_token)
+- `POST /api/v1/auth/refresh` — Refresh access token
+- `POST /api/v1/auth/logout` — Logout (requires auth)
+
+### Users
+- `GET /api/v1/users/me` — Current user profile (requires auth)
+- `GET /api/v1/users/` — List all users (admin only)
+- `POST /api/v1/users/` — Create user (admin only)
+- `PUT /api/v1/users/:id` — Update user (admin only)
+- `DELETE /api/v1/users/:id` — Delete user (admin only)
+
+### Reports (= Market Reports)
+- `GET /api/v1/reports` — List reports (supports filters, pagination)
+- `GET /api/v1/reports/:slug` — Single report by slug (includes market_metrics, key_players, sections, FAQs)
+- `GET /api/v1/reports/author/:id` — Reports by author
+- `GET /api/v1/search` — Unified search across reports
+- `POST /api/v1/reports` — Create report (admin/editor)
+- `PUT /api/v1/reports/:id` — Update report (admin/editor)
+- `PATCH /api/v1/reports/:id/soft-delete` — Soft delete (admin/editor)
+
+### Categories (= Industries)
+- `GET /api/v1/categories` — List all categories
+- `GET /api/v1/categories/:slug` — Single category
+- `GET /api/v1/categories/:slug/reports` — Reports in a category
+- `GET /api/v1/categories/:slug/blogs` — Blogs in a category
+- `GET /api/v1/categories/:slug/press-releases` — Press releases in a category
+
+### Authors
+- `GET /api/v1/authors` — List all authors
+- `GET /api/v1/authors/:id` — Single author
+
+### Blogs
+- `GET /api/v1/blogs` — List blogs (supports filters, pagination)
+- `GET /api/v1/blogs/slug/:slug` — Single blog by slug
+
+### Press Releases
+- `GET /api/v1/press-releases` — List press releases
+- `GET /api/v1/press-releases/slug/:slug` — Single press release by slug
+
+### Forms (Contact, Sample Request, Customization, Demo)
+- `POST /api/v1/forms/submissions` — Submit a form (public)
+- `GET /api/v1/forms/submissions` — List submissions
+- `GET /api/v1/forms/stats` — Form stats
+
+### Orders (Payments)
+- `POST /api/v1/orders` — Create order (supports PayPal + Stripe)
+- `POST /api/v1/orders/:id/capture` — Capture PayPal payment
+- `POST /api/v1/orders/:id/stripe-capture` — Confirm Stripe payment
+- `POST /api/v1/webhooks/stripe` — Stripe webhook
+
+### Redirects
+- `GET /api/v1/redirects/active` — Active redirects
+
+### Sitemap
+- `GET /api/v1/sitemap/reports` — All reports for sitemap
+- `GET /api/v1/sitemap/blogs` — All blogs for sitemap
+- `GET /api/v1/sitemap/press-releases` — All press releases for sitemap
+
+### Dashboard (Admin)
+- `GET /api/v1/dashboard/stats` — Dashboard statistics
+- `GET /api/v1/dashboard/activity` — Recent activity
+
+---
+
+## Existing Data Models (Backend)
+
+### Report (= Market/Outlook)
+```
+Report {
+  id, category_id, title, slug, description, summary,
+  price, discounted_price, currency,
+  page_count, formats (jsonb), geography (jsonb),
+  status (draft/review/published), is_featured,
+  publish_date, scheduled_publish_enabled,
+  author_ids (jsonb),
+  market_metrics (jsonb: { currentRevenue, currentYear, forecastRevenue, forecastYear, cagr, cagrStartYear, cagrEndYear }),
+  key_players (jsonb: [{ name, marketShare, rank, description }]),
+  sections (jsonb: { keyPlayers, marketDetails, tableOfContents }),
+  faqs (jsonb: [{ question, answer }]),
+  meta_title, meta_description, meta_keywords,
+  internal_links (jsonb),
+  created_by, updated_by, internal_notes,
+  created_at, updated_at, deleted_at
+}
+```
+
+### Category (= Industry)
+```
+Category {
+  id, name, slug, description, image_url, is_active, created_at, updated_at
+}
+```
+
+### User (Admin/Internal)
+```
+User {
+  id, email, password_hash, name, role (admin/editor/viewer), is_active,
+  last_login_at, created_at, updated_at
+}
+```
+
+### Order
+```
+Order {
+  id, customer_name, customer_email, customer_company, customer_phone, customer_country,
+  report_id, report_title, report_slug,
+  amount, currency, payment_method (paypal/stripe),
+  paypal_order_id, paypal_capture_id, stripe_payment_intent_id,
+  status (pending_payment/payment_received/processing/delivered/cancelled/refunded),
+  fulfilled_at, fulfilled_by, admin_notes,
+  created_at, updated_at, deleted_at
+}
+```
+
+### Blog
+```
+Blog {
+  id, title, slug, content, excerpt, category_id, author_id,
+  featured_image_url, status (draft/review/published),
+  meta_title, meta_description, meta_keywords,
+  internal_links (jsonb),
+  created_at, updated_at, deleted_at
+}
+```
+
+### Press Release
+```
+PressRelease {
+  id, title, slug, content, excerpt, category_id, author_id,
+  status, report_url,
+  meta_title, meta_description, meta_keywords,
+  internal_links (jsonb),
+  created_at, updated_at, deleted_at
+}
+```
+
+### Form Submission
+```
+FormSubmission {
+  id, category (contact/request-sample/request-customization/schedule-demo),
+  status (pending/processed/archived),
+  form_data (jsonb), created_at, updated_at
+}
+```
+
+### Author
+```
+Author {
+  id, name, email, bio, image_url, linkedin_url, created_at, updated_at
+}
+```
+
+---
 
 Application Architecture
 /app
@@ -25,35 +195,35 @@ Application Architecture
     /layout.tsx          ← Authenticated shell (sidebar + topnav)
     /page.tsx            ← Home/Dashboard
     /industries
-      /page.tsx          ← All Industries browse page
+      /page.tsx          ← All Industries browse page (maps to Categories API)
     /search
-      /page.tsx          ← Search results page
+      /page.tsx          ← Search results page (uses /api/v1/search)
     /outlook
       /[slug]
         /[region]
-          /page.tsx      ← Market Overview tab (default)
-          /dashboard     ← Interactive chart dashboard
+          /page.tsx      ← Market Overview tab (default) — uses /api/v1/reports/:slug
+          /dashboard     ← Interactive chart dashboard (data from report.market_metrics)
           /statistics    ← Data tables
           /reports       ← Linked PDF reports
-          /scope         ← TOC / segmentation
-          /companies     ← Market players list
+          /scope         ← TOC / segmentation (from report.sections.tableOfContents)
+          /companies     ← Market players list (from report.key_players)
     /companies
-      /page.tsx          ← Company search/list
+      /page.tsx          ← Company search/list (key_players aggregated from reports)
       /[slug]
         /page.tsx        ← Company profile detail
     /insights
-      /white-papers
-      /thought-leadership
+      /white-papers      ← Maps to /api/v1/blogs (filtered)
+      /thought-leadership ← Maps to /api/v1/press-releases
     /services
       /pipeline          ← Supply chain service page
       /brainshare        ← Consulting service page
       /signal            ← Pricing database service page
       /astra             ← ESG solution service page
-    /my-reports          ← Bookmarks (Recent Visited / My Reports / My Downloads)
+    /my-reports          ← Bookmarks (Recent Visited / My Reports / My Downloads) — client-side localStorage
     /pricing             ← Subscription plans & upgrade
     /profile
       /page.tsx          ← Profile, Password, Subscription, Payments, Invite Colleagues tabs
-    /contact
+    /contact             ← Uses POST /api/v1/forms/submissions
     /survey
 
 Page-by-Page Specifications
@@ -87,6 +257,7 @@ Market name with arrow link
 Three quick-access links: Dashboard | Statistics | Report
 Hover: subtle lift shadow + teal underline
 
+**Data Source:** `GET /api/v1/reports?sort=newest&limit=4&status=published`
 
 
 Service Tabs Section:
@@ -139,7 +310,7 @@ Copyright line
 2. 🧭 Navigation Bar (Persistent, Top)
 Desktop (logged in):
 [Logo + Brand]     [Search Input]    [Statistics ▾] [Reports ▾] [Pricing] [Services ▾] [Upgrade Plan CTA] [User Avatar ▾]
-Statistics Dropdown: Mega-menu with all 26+ industry categories in 4 columns + "View All Statistics" footer link
+Statistics Dropdown: Mega-menu populated from `GET /api/v1/categories` — all categories in 4 columns + "View All Statistics" footer link
 Reports Dropdown: Same mega-menu structure + "View All Reports"
 Services Dropdown: 4 items — ESG Solutions, Analytics & Consulting, Procurement Intelligence, Pricing Index
 User Avatar Dropdown: Profile, Subscription, Logout
@@ -151,7 +322,7 @@ State: Expanded (160px) or Collapsed (icon-only, 56px). Toggle button at bottom-
 Expanded links:
 
 🏠 Home
-📊 Industries ▶ (expandable: Biotechnology, Clinical Diagnostics, Consumer Goods, Polymers & Resins, Technology, Explore All Industries)
+📊 Industries ▶ (expandable: populated from Categories API)
 🕓 Recent Visited
 ☰ My Reports
 🏢 Companies ▶ (expandable: Basic Materials, Consumer Defensive, Energy, Financial Services, Healthcare, Industrials, Real Estate, Technology, Utilities, Explore All Companies)
@@ -176,8 +347,7 @@ Full-width alphabetically grouped table:
 Left column: Industry name (bold, large)
 Right columns: Sub-industry links (each as a clickable text link with external-link icon)
 
-
-Industries listed (at minimum): Aerospace & Defence, Animal Health, Automotive & Transportation, Biotechnology, Bulk Chemicals, Clinical Diagnostics, Consumer Goods, Consumer Services, Energy & Power, Financial Services, Food Beverages & Tobacco, Healthcare, Materials, MedTech, Metals & Mining, Nutrition, Packaging, Pharmaceuticals, Plastics, Semiconductor, Sexual Health, Specialty Chemicals, Telecom & Technology
+**Data Source:** `GET /api/v1/categories` — each category = industry, with reports as sub-industries
 
 Each sub-industry link: opens the Search page pre-filtered by that sub-industry
 Sticky jump dropdown: Anchors to each industry section on the page
@@ -185,11 +355,14 @@ Sticky jump dropdown: Anchors to each industry section on the page
 5. 🔍 Search Results Page (/search)
 URL pattern: /search?q=antibodies&subindustry=Antibody+Production&type=Report
 Layout: Two-panel (left filters + right results)
+
+**Data Source:** `GET /api/v1/search?q=...` + `GET /api/v1/reports?category_slug=...`
+
 Left Panel (Filters):
 
 Reset all filters link
 TYPE checkboxes: Statistics (count), Report (count), Databook (count)
-INDUSTRY checkboxes (multi-select with counts)
+INDUSTRY checkboxes (multi-select with counts) — from Categories API
 SUB INDUSTRY checkboxes (collapsible, 10 shown then "+ More" expander)
 SEGMENTS checkboxes
 Each filter updates results in real-time (no submit needed)
@@ -212,28 +385,31 @@ Empty state: Illustrated empty-state component with "No results found"
 
 6. 📈 Market Outlook Page (/outlook/[slug]/[region])
 This is the most complex page. It has a sticky secondary tab bar and multiple sub-views.
+
+**Data Source:** `GET /api/v1/reports/:slug` — returns full report with market_metrics, key_players, sections, FAQs
+
 Header Section:
 
 Page title: "Global [Market Name] Market Size & Outlook"
 Small badge: "PDF Report Available"
-Description paragraph (2-3 sentences of market summary)
+Description paragraph (2-3 sentences from `report.description`)
 Data Tree panel (collapsible right panel): shows taxonomy breadcrumb as a tree (Industry → Sub-industry → Market Outlook)
 
 Secondary Tab Bar (sticky on scroll):
 Overview | Dashboard | Statistics | Reports | Scope | Companies | Request Customization ℹ
 
 Tab 1: Overview (default)
-KPI Cards row (3 cards):
+KPI Cards row (3 cards) — from `report.market_metrics`:
 
-Revenue, [year] (US$B): large bold number with dollar icon
-Forecast, [year] (US$B): large bold number with chart icon
-CAGR, [start]-[end]: large bold % with trend icon
-4th card: Report Coverage: "Worldwide" (geography label)
+Revenue, [year] (US$B): `market_metrics.currentRevenue` + `market_metrics.currentYear`
+Forecast, [year] (US$B): `market_metrics.forecastRevenue` + `market_metrics.forecastYear`
+CAGR, [start]-[end]: `market_metrics.cagr` + year range
+4th card: Report Coverage: geography from `report.geography`
 
 Main Chart: Bar Chart
 
 Title: "[Market] market, [year range] (US$B)"
-Interactive bar chart (Recharts BarChart)
+Interactive bar chart (Recharts BarChart) — data derived from market_metrics (interpolated yearly values)
 X-axis: years, Y-axis: market size in US$B
 Tooltip on hover showing exact value
 Toolbar icons (vertical stack on right):
@@ -252,25 +428,28 @@ Share icon
 
 Market Highlights Section:
 
-Bullet-list of 5-6 key insights
+Bullet-list of 5-6 key insights (from `report.sections.marketDetails`)
 "Global data book summary" table (2-col: metric / value)
 "Other key industry trends" bullet list
-"Key Regions" as linked chips
+"Key Regions" as linked chips (from `report.geography`)
 
 Market Scope Section:
 
 Section title + purple banner header "Market segmentation & scope"
-Segmentation grid table: columns for Source Type, Production Type, Application, End Use, Regions, Countries — each listing segment values as individual bordered boxes
+Segmentation grid table: from `report.sections.tableOfContents`
 
 Market Companies Preview Table:
 
-Name | Profile link | # Employees | HQ | Website columns
+Data from `report.key_players` — Name | Market Share | Rank | Description
 8-10 rows, "View More" link to companies tab
 
 Market Outlook Text:
 
-Full editorial text about the market
+Full editorial text from `report.sections.marketDetails`
 Segment-specific sub-sections
+
+FAQs Section:
+From `report.faqs` — accordion-style Q&A
 
 Partial Client List sidebar widget:
 
@@ -278,7 +457,7 @@ Mini logo grid (GE Healthcare, Deloitte, KPMG, Accenture, Siemens, Google)
 
 Related Markets Sidebar (right column):
 
-List of 10-15 related geography/sub-market links (e.g. "North America [Market] Outlook")
+List of 10-15 related geography/sub-market links — from reports in same category
 
 "Horizon in a Snapshot" sidebar widget:
 
@@ -287,7 +466,7 @@ List of 10-15 related geography/sub-market links (e.g. "North America [Market] O
 ✓ 1.2M+ Market Statistics
 ✓ 200K+ Company Profiles
 ✓ Industry insights and more
-"ANALYST CALLBACK" CTA button
+"ANALYST CALLBACK" CTA button → triggers `POST /api/v1/forms/submissions` with category "schedule-demo"
 
 
 Tab 2: Dashboard (Premium/Upgrade locked for free users)
@@ -297,7 +476,7 @@ Dashboard title: "[Market Name] Market Size, [year range]"
 Segment filter pills (multi-select): Global Dashboard, Source Type, Production Type, Application, End Use
 Filter dropdowns top-right: Region selector, Country selector, Year selector
 Main chart area: switches chart type based on segment pill selected
-Chart renders bar/pie/line charts dynamically
+Chart renders bar/pie/line charts dynamically — data from market_metrics
 
 When locked (free tier):
 
@@ -307,7 +486,6 @@ Blurred/overlay modal: "To keep accessing Horizon, please upgrade your plan"
 ✓ Access to company profiles
 ✓ Free use-cases & research insights
 "Upgrade Plan" (dark purple) and "View Plans" (outlined) buttons
-
 
 
 
@@ -331,30 +509,17 @@ Report title (bold)
 Full segment descriptor paragraph
 Quick links: Report Overview | Report Statistics | View Full Report
 "Buy Now" and "Talk to Analyst" CTA buttons (right-aligned)
-
+"Buy Now" → `/checkout/:slug` (uses Orders API: `POST /api/v1/orders`)
 
 
 
 Tab 5: Scope
 
-Hierarchical bulleted list of all segments and sub-segments
-E.g.:
-
-"[Market] source type outlook (Revenue, USD Billion, 2018-2030)"
-
-Human
-Humanized
-Chimeric
-
-
-"[Market] production type outlook..."
-
-
-
+Hierarchical bulleted list from `report.sections.tableOfContents`
 
 Tab 6: Companies
 
-Table: Name | Profile (link) | # Employees | HQ | Website
+Table from `report.key_players`: Name | Market Share | Rank | Description
 "View More" pagination
 
 
@@ -362,6 +527,7 @@ Tab 7: Request Customization ℹ
 
 Brief info icon tooltip explaining custom report service
 Form: name, company, requirements textarea, submit CTA
+**Submits to:** `POST /api/v1/forms/submissions` with category "request-customization"
 
 
 7. 🏢 Companies List Page (/companies)
@@ -376,6 +542,8 @@ Sort By (dropdown: Latest, A-Z, Revenue, Employees)
 
 
 "Search" and "Reset" action buttons
+
+**Data Source:** Aggregated from `report.key_players` across all reports, or a dedicated companies dataset
 
 Results Table:
 
@@ -408,7 +576,7 @@ Tag chips: Industry tags (e.g. "Energy", "Government", "Solar")
 
 Right Sidebar:
 
-"Market Reports" panel with linked market report items
+"Market Reports" panel — reports where this company appears in key_players
 
 News Tab:
 
@@ -419,11 +587,13 @@ List of news articles from external sources related to the company (if available
 White Papers (/insights/white-papers):
 
 3-column card grid
+**Data Source:** `GET /api/v1/blogs?status=published` (filtered by type/tag)
 Each card: full-bleed editorial image + title + blurred overlay for locked content
 "Unlock Premium 🔒" centered overlay CTA
 
 Thought Leadership (/insights/thought-leadership):
 
+**Data Source:** `GET /api/v1/press-releases?status=published`
 Same layout as White Papers
 
 
@@ -455,6 +625,7 @@ Testimonials: 3-card row (GE Healthcare, KPMG Netherlands, NICCA USA)
 
 12. 👤 Profile / Account Page (/profile)
 User header: Name + Email address displayed
+**Data Source:** `GET /api/v1/users/me` (requires auth)
 5-tab navigation: Profile | Password | Subscription | Payments / Invoices | Invite Colleagues
 Profile Tab:
 
@@ -482,6 +653,7 @@ List of pending/accepted invites
 
 13. 📋 My Reports / Bookmarks Page (/my-reports)
 3-tab sub-navigation: Recent Visited | My Reports | My Downloads
+**Data Source:** Client-side localStorage (Zustand persisted store) — no backend API needed
 Recent Visited:
 
 List items sorted by most recent:
@@ -495,6 +667,22 @@ Timestamp ("6 minutes ago", "a day ago")
 
 My Reports: Starred/saved items, same card format. Empty state: illustrated "No results found" with icon.
 My Downloads: Downloaded files list with filename, date, format (PDF/CSV/XLS), re-download icon.
+
+14. 🛒 Checkout Page (/checkout/[reportSlug])
+**Data Source:** `GET /api/v1/reports/:slug` for report details + pricing
+Layout:
+- Order summary card (report title, price, discounted price)
+- Customer form (name, email, company, phone, country)
+- Payment method selection: PayPal or Stripe
+- PayPal: Uses `POST /api/v1/orders` → PayPal JS SDK with returned `paypal_order_id`
+- Stripe: Uses `POST /api/v1/orders` → Stripe Elements with returned `stripe_client_secret`
+- On success: `POST /api/v1/orders/:id/capture` (PayPal) or `/stripe-capture` (Stripe)
+- Redirect to `/order-success`
+
+15. ✅ Order Success Page (/order-success)
+- Confirmation message with order details
+- Link to download report (if applicable)
+- Link back to reports
 
 
 🎨 Design System
@@ -538,10 +726,13 @@ Chart bars: staggered entrance animation on mount
 
 
 🔐 Authentication & Authorization
-Auth flow: NextAuth.js with Credentials + Google OAuth
-Session: JWT
-Middleware: Protect all /app/(dashboard)/* routes
-Redirect: Unauthenticated → /login
+Auth flow: JWT tokens from Go backend (`POST /api/v1/auth/login`)
+Session: Access token stored in memory/cookie, refresh token for renewal
+Middleware: Client-side route protection — redirect unauthenticated users to /login
+Token refresh: Automatic via `POST /api/v1/auth/refresh` on 401 responses
+
+> **Note:** The backend uses role-based auth (admin/editor/viewer). The analytics portal treats all public visitors as unauthenticated free-tier users. Subscription/plan gating is handled client-side for the MVP (mock tier system), with real plan enforcement to be added when subscription models are added to the backend User model.
+
 Access Control by Plan Tier:
 FeatureFreeBasicPremiumEnterpriseView Overview stats✅✅✅✅Dashboard tab❌ (upgrade modal)✅✅✅Statistics (full)Partial (blurred rows)Up to 50010K+1M+Download CSV/XLS❌PNG only✅✅White Papers❌❌✅✅Thought Leadership❌❌✅✅Full Reports❌Buy separately1/year included25/year
 Locked State Pattern: For any locked feature, show a semi-transparent overlay with:
@@ -551,78 +742,25 @@ Upgrade message
 "Upgrade Plan" (filled) + "View Plans" (outlined) buttons
 
 
-📊 Data Models (Prisma Schema Outline)
-prismamodel User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  plan          Plan     @default(FREE)
-  createdAt     DateTime @default(now())
-  bookmarks     Bookmark[]
-  recentVisited RecentVisit[]
-}
+📊 Data Model Mapping (Backend → Analytics Portal)
 
-enum Plan { FREE BASIC PREMIUM ENTERPRISE }
+The analytics portal does NOT define its own database models. It consumes the existing backend API.
 
-model Market {
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  title       String
-  industry    String
-  subIndustry String
-  region      String
-  description String
-  revenue     Float
-  forecast    Float
-  cagr        Float
-  yearStart   Int
-  yearEnd     Int
-  dataPoints  MarketDataPoint[]
-  companies   MarketCompany[]
-  segments    Segment[]
-}
-
-model MarketDataPoint {
-  id       String @id @default(cuid())
-  marketId String
-  year     Int
-  value    Float
-  type     String  // "global" | "region" | "segment"
-  market   Market @relation(fields: [marketId], references: [id])
-}
-
-model Company {
-  id              String @id @default(cuid())
-  slug            String @unique
-  name            String
-  sector          String
-  industry        String
-  hq              String
-  employees       String
-  revenue         String
-  operatingStatus String
-  website         String?
-  phone           String?
-  foundedYear     Int?
-  ipoStatus       String?
-  description     String?
-}
-
-model Bookmark {
-  id       String @id @default(cuid())
-  userId   String
-  marketId String
-  user     User   @relation(fields: [userId], references: [id])
-}
-
-model RecentVisit {
-  id         String   @id @default(cuid())
-  userId     String
-  marketId   String
-  visitedAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-}
-```
+| Portal Concept | Backend Model | API Endpoint |
+|---|---|---|
+| Market/Outlook | Report | `GET /api/v1/reports/:slug` |
+| Industry | Category | `GET /api/v1/categories` |
+| Company (key player) | Report.key_players (jsonb) | Extracted from report data |
+| Market Metrics (KPIs) | Report.market_metrics (jsonb) | Part of report response |
+| Segmentation/Scope | Report.sections.tableOfContents | Part of report response |
+| White Papers | Blog | `GET /api/v1/blogs` |
+| Thought Leadership | Press Release | `GET /api/v1/press-releases` |
+| Contact/Forms | Form Submission | `POST /api/v1/forms/submissions` |
+| Checkout/Orders | Order | `POST /api/v1/orders` |
+| User Profile | User | `GET /api/v1/users/me` |
+| Bookmarks | Client-side (localStorage) | N/A |
+| Recent Visits | Client-side (localStorage) | N/A |
+| Authors/Analysts | Author | `GET /api/v1/authors` |
 
 ---
 
@@ -644,17 +782,25 @@ These go beyond the reference site:
 
 ## 📁 Key Files to Create First
 ```
-1. /lib/auth.ts              ← NextAuth config
-2. /lib/prisma.ts            ← Prisma client singleton
-3. /components/layout/Sidebar.tsx
-4. /components/layout/TopNav.tsx
-5. /components/market/OverviewTab.tsx
-6. /components/market/StatsTable.tsx
-7. /components/market/DashboardTab.tsx
-8. /components/charts/BarChartCard.tsx
-9. /components/ui/PricingCard.tsx
-10. /components/ui/PlanGate.tsx  ← Gated content wrapper
-11. /app/api/markets/[slug]/route.ts
-12. /app/api/search/route.ts
+1. /lib/api/client.ts            ← Axios/fetch wrapper for backend API (base URL, auth headers, token refresh)
+2. /lib/api/reports.ts           ← Report API functions
+3. /lib/api/categories.ts        ← Category API functions
+4. /lib/api/auth.ts              ← Auth API functions (login, refresh, logout)
+5. /lib/api/forms.ts             ← Form submission API functions
+6. /lib/api/orders.ts            ← Order/checkout API functions
+7. /components/layout/Sidebar.tsx
+8. /components/layout/TopNav.tsx
+9. /components/market/OverviewTab.tsx
+10. /components/market/StatsTable.tsx
+11. /components/market/DashboardTab.tsx
+12. /components/charts/BarChartCard.tsx
+13. /components/ui/PricingCard.tsx
+14. /components/ui/PlanGate.tsx   ← Gated content wrapper
+15. /app/(dashboard)/layout.tsx
+16. /app/(dashboard)/outlook/[slug]/[region]/page.tsx  ← Most complex page
+17. /app/(dashboard)/industries/page.tsx
+18. /app/(dashboard)/search/page.tsx
+19. /app/(dashboard)/companies/page.tsx
 
-This prompt covers every page, interaction, data model, design token, and enhancement needed to build and surpass the reference portal. Start with the layout shell (sidebar + topnav), then the Home page, then the Market Outlook page (most complex), then Search, then Companies, then Profile/Auth flows.
+This prompt covers every page, interaction, data mapping, and design token needed to build the analytics portal frontend that consumes the existing Go backend API.
+```

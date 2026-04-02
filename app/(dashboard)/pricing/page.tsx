@@ -46,7 +46,7 @@ export default function PricingPage() {
             <p className="font-body text-sm mb-5 max-w-lg mx-auto text-white/50">
               The price packages don&apos;t meet your needs? Tell us more &amp; our analysts will custom build a package for you.
             </p>
-            <Link href="#"
+            <Link href="/contact"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-body font-semibold transition-all bg-secondary text-white hover:opacity-90 active:scale-[0.97]">
               Custom Pricing
               <ArrowRight className="w-3.5 h-3.5" />
@@ -160,8 +160,8 @@ export default function PricingPage() {
           <h3 className="font-headline font-bold text-xl text-primary mb-3">Still have questions?</h3>
           <p className="font-body text-sm text-on-surface-variant mb-6">Our team is ready to help you find the right plan for your needs.</p>
           <div className="flex justify-center gap-4">
-            <Link href="#" className="btn-primary">Talk to Sales</Link>
-            <Link href="#" className="btn-outline">View FAQ</Link>
+            <Link href="/contact" className="btn-primary">Talk to Sales</Link>
+            <Link href="/faq" className="btn-outline">View FAQ</Link>
           </div>
         </div>
       </section>

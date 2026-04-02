@@ -62,8 +62,8 @@ const navItems = [
     ],
   },
   { icon: CreditCard, label: 'Pricing', href: '/pricing' },
-  { icon: ClipboardList, label: 'Survey', href: '#' },
-  { icon: Contact, label: 'Contact Us', href: '#' },
+  { icon: ClipboardList, label: 'Survey', href: '/survey' },
+  { icon: Contact, label: 'Contact Us', href: '/contact' },
 ]
 
 export default function Sidebar() {
@@ -182,7 +182,7 @@ export default function Sidebar() {
           </button>
         )}
         <Link
-          href="#"
+          href="/support"
           className={cn(
             'flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 rounded-xl transition-all text-sm',
             collapsed && 'justify-center'
@@ -192,7 +192,7 @@ export default function Sidebar() {
           {!collapsed && <span className="font-inter font-medium">Support</span>}
         </Link>
         <Link
-          href="#"
+          href="/login"
           className={cn(
             'flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 rounded-xl transition-all text-sm',
             collapsed && 'justify-center'

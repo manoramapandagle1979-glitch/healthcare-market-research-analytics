@@ -19,7 +19,7 @@ export default function PipelinePage() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-body font-semibold text-white mb-6 bg-secondary/20 border border-secondary/30">
               <Activity className="w-3 h-3" />
-              Horizon Pipeline
+              Curator Pipeline
             </div>
             <h1 className="font-headline font-bold text-3xl text-white mb-4 leading-tight">
               Grand View Pipeline
@@ -38,7 +38,7 @@ export default function PipelinePage() {
                 Access Reports
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="#"
+              <Link href="/contact"
                 className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-body font-medium text-white border border-white/30 hover:bg-white/10 transition-all">
                 Talk to an Expert
               </Link>

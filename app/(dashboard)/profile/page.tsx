@@ -226,7 +226,7 @@ export default function ProfilePage() {
           <div className="max-w-lg">
             <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
               <h3 className="font-headline font-semibold text-base text-primary mb-2">Invite Colleagues</h3>
-              <p className="font-body text-sm text-on-surface-variant mb-5">Share Horizon Intelligence with your team members.</p>
+              <p className="font-body text-sm text-on-surface-variant mb-5">Share Curator Intelligence with your team members.</p>
               <div className="flex gap-3">
                 <input
                   type="email"

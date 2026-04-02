@@ -11,7 +11,7 @@ import StatCounter from '@/components/ui/StatCounter'
 const serviceTabs = [
   {
     id: 'databooks',
-    label: 'Horizon Databooks',
+    label: 'Curator Databooks',
     icon: Database,
     heading: 'The World\'s Most Comprehensive Market Database',
     description: 'Access 30,000+ global and regional market reports covering 23+ industries with granular statistics, forecasts, and CAGR data spanning 2018–2030. Our databooks provide the depth and breadth needed for strategic decisions.',
@@ -150,7 +150,7 @@ export default function HomePage() {
           {/* Heading */}
           <h1 className="font-headline font-extrabold text-white mb-2 leading-tight"
             style={{ fontSize: 'clamp(2.2rem, 5vw, 3.75rem)', letterSpacing: '-0.03em' }}>
-            Horizon Intelligence
+            Curator Intelligence
           </h1>
           <h2 className="font-headline font-extrabold mb-6 leading-tight"
             style={{
@@ -465,7 +465,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-10">
             <h2 className="font-headline font-extrabold text-2xl text-white mb-2">Trusted by Market Leaders</h2>
-            <p className="text-sm font-body text-white/40">Join thousands of analysts who rely on Horizon Intelligence</p>
+            <p className="text-sm font-body text-white/40">Join thousands of analysts who rely on Curator Intelligence</p>
           </div>
 
           <div
@@ -547,7 +547,7 @@ export default function HomePage() {
             Is One Search Away
           </div>
           <p className="font-body text-base mb-8 max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            Join 15,000+ analysts, strategists, and investors who trust Horizon Intelligence for market decisions that matter.
+            Join 15,000+ analysts, strategists, and investors who trust Curator Intelligence for market decisions that matter.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/register"
@@ -576,17 +576,17 @@ export default function HomePage() {
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-secondary">
                   <TrendingUp className="w-3.5 h-3.5 text-white" />
                 </div>
-                <span className="font-headline font-extrabold text-white text-sm">Horizon Intelligence</span>
+                <span className="font-headline font-extrabold text-white text-sm">Curator Intelligence</span>
               </div>
               <p className="text-xs font-body leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
                 World&apos;s largest portal for market reports &amp; statistics, enhanced with AI.
               </p>
               <div className="flex items-center gap-3">
-                <a href="#" className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
                   style={{ border: '1px solid rgba(255,255,255,0.10)' }}>
                   <Linkedin className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.45)' }} />
                 </a>
-                <a href="#" className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
                   style={{ border: '1px solid rgba(255,255,255,0.10)' }}>
                   <Twitter className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.45)' }} />
                 </a>
@@ -595,17 +595,33 @@ export default function HomePage() {
 
             {/* Link columns */}
             {[
-              { title: 'Platform', links: ['Industries', 'Companies', 'Search', 'Pricing'] },
-              { title: 'Services', links: ['Databooks', 'Pipeline', 'Signal', 'Brainshare', 'Astra'] },
-              { title: 'Company', links: ['About', 'Contact', 'Privacy Policy', 'Terms & Conditions'] },
+              { title: 'Platform', links: [
+                { label: 'Industries', href: '/industries' },
+                { label: 'Companies', href: '/companies' },
+                { label: 'Search', href: '/search' },
+                { label: 'Pricing', href: '/pricing' },
+              ]},
+              { title: 'Services', links: [
+                { label: 'Databooks', href: '/industries' },
+                { label: 'Pipeline', href: '/services/pipeline' },
+                { label: 'Signal', href: '/services/signal' },
+                { label: 'Brainshare', href: '/services/brainshare' },
+                { label: 'Astra', href: '/services/astra' },
+              ]},
+              { title: 'Company', links: [
+                { label: 'About', href: '/about' },
+                { label: 'Contact', href: '/contact' },
+                { label: 'Privacy Policy', href: '/privacy' },
+                { label: 'Terms & Conditions', href: '/terms' },
+              ]},
             ].map(col => (
               <div key={col.title}>
                 <h4 className="font-headline font-semibold text-white text-xs uppercase tracking-widest mb-4">{col.title}</h4>
                 <ul className="space-y-2.5">
                   {col.links.map(link => (
-                    <li key={link}>
-                      <Link href="#" className="text-xs font-body transition-colors text-white/40 hover:text-white/80">
-                        {link}
+                    <li key={link.label}>
+                      <Link href={link.href} className="text-xs font-body transition-colors text-white/40 hover:text-white/80">
+                        {link.label}
                       </Link>
                     </li>
                   ))}
@@ -618,12 +634,16 @@ export default function HomePage() {
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4"
             style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
             <p className="text-xs font-body text-white/25">
-              &copy; 2025 Horizon Intelligence. All rights reserved.
+              &copy; 2025 Curator Intelligence. All rights reserved.
             </p>
             <div className="flex gap-5">
-              {['Privacy Policy', 'Terms & Conditions', 'Cookie Policy'].map(link => (
-                <Link key={link} href="#" className="text-xs font-body text-white/25 hover:text-white/55 transition-colors">
-                  {link}
+              {[
+                { label: 'Privacy Policy', href: '/privacy' },
+                { label: 'Terms & Conditions', href: '/terms' },
+                { label: 'Cookie Policy', href: '/cookie-policy' },
+              ].map(link => (
+                <Link key={link.label} href={link.href} className="text-xs font-body text-white/25 hover:text-white/55 transition-colors">
+                  {link.label}
                 </Link>
               ))}
             </div>

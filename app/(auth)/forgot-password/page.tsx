@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
             style={{ background: '#111115' }}>
             <TrendingUp className="w-4 h-4 text-white" />
           </div>
-          <span className="font-sora font-bold text-brand-primary text-xl">Horizon Intelligence</span>
+          <span className="font-sora font-bold text-brand-primary text-xl">Curator Intelligence</span>
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl p-8">

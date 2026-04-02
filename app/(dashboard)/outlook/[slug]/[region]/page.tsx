@@ -351,7 +351,7 @@ export default function MarketOutlookPage({ params }: { params: { slug: string; 
                 <h4 className="font-headline font-semibold text-sm text-primary mb-3">Related Markets</h4>
                 <div className="space-y-2">
                   {market.relatedMarkets.map(rm => (
-                    <Link key={rm} href="#"
+                    <Link key={rm} href={`/search?q=${encodeURIComponent(rm)}`}
                       className="block text-xs font-body text-on-surface-variant hover:text-secondary transition-colors py-1 border-b border-surface-container last:border-0">
                       {rm}
                     </Link>
@@ -359,9 +359,9 @@ export default function MarketOutlookPage({ params }: { params: { slug: string; 
                 </div>
               </div>
 
-              {/* Horizon Snapshot */}
+              {/* Curator Snapshot */}
               <div className="rounded-xl p-5 bg-primary">
-                <h4 className="font-headline font-semibold text-sm text-white mb-3">Horizon in a Snapshot</h4>
+                <h4 className="font-headline font-semibold text-sm text-white mb-3">Curator in a Snapshot</h4>
                 <div className="space-y-2 mb-4">
                   {[
                     '30K+ Global Market Reports',
@@ -397,10 +397,10 @@ export default function MarketOutlookPage({ params }: { params: { slug: string; 
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-5 shadow-card">
                 <h4 className="font-headline font-semibold text-sm text-primary mb-3">Key Regions</h4>
                 <div className="flex flex-wrap gap-1.5">
-                  {['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East & Africa'].map(region => (
-                    <Link key={region} href="#"
+                  {['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East & Africa'].map(r => (
+                    <Link key={r} href={`/outlook/${params.slug}/${r.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}`}
                       className="px-2.5 py-1 rounded-lg text-xs font-body text-on-surface-variant bg-surface-container border border-outline-variant/20 hover:border-secondary hover:text-secondary transition-all">
-                      {region}
+                      {r}
                     </Link>
                   ))}
                 </div>

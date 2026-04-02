@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Horizon Intelligence — Market Research & Analytics Portal',
+  title: 'Curator Intelligence — Market Research & Analytics Portal',
   description: 'World\'s largest portal for market reports, statistics & AI-powered research insights.',
 }
 

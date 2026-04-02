@@ -20,7 +20,7 @@ export default function LoginPage() {
               style={{ background: '#d4870a' }}>
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
-            <span className="font-sora font-bold text-white text-xl">Horizon Intelligence</span>
+            <span className="font-sora font-bold text-white text-xl">Curator Intelligence</span>
           </div>
           <h2 className="font-sora font-bold text-3xl text-white mb-4 leading-tight">
             Market intelligence<br />at your fingertips
@@ -70,7 +70,7 @@ export default function LoginPage() {
               style={{ background: '#111115' }}>
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <span className="font-sora font-bold text-brand-primary">Horizon Intelligence</span>
+            <span className="font-sora font-bold text-brand-primary">Curator Intelligence</span>
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl p-8">

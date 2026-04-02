@@ -10,7 +10,7 @@ export default function RegisterPage() {
             style={{ background: '#111115' }}>
             <TrendingUp className="w-4 h-4 text-white" />
           </div>
-          <span className="font-sora font-bold text-brand-primary text-xl">Horizon Intelligence</span>
+          <span className="font-sora font-bold text-brand-primary text-xl">Curator Intelligence</span>
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl p-8">
@@ -93,11 +93,11 @@ export default function RegisterPage() {
               />
               <label htmlFor="terms" className="text-xs font-dm text-gray-600 cursor-pointer leading-relaxed">
                 I agree to the{' '}
-                <Link href="#" className="text-brand-accent hover:underline font-medium">
+                <Link href="/terms" className="text-brand-accent hover:underline font-medium">
                   Terms of Service
                 </Link>
                 {' '}and{' '}
-                <Link href="#" className="text-brand-accent hover:underline font-medium">
+                <Link href="/privacy" className="text-brand-accent hover:underline font-medium">
                   Privacy Policy
                 </Link>
               </label>

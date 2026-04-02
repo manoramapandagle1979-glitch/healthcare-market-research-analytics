@@ -78,12 +78,8 @@ const config: Config = {
           'accent-light': '#86f2e4',
           'violet-light': '#eaddff',
         },
-        surface: {
-          app:     '#f7f9fb',
-          card:    '#ffffff',
-          sidebar: '#091426',
-          surface: '#f2f4f6',
-        },
+        'surface-card':    '#ffffff',
+        'surface-sidebar': '#091426',
       },
       fontFamily: {
         headline: ['Manrope', 'system-ui', 'sans-serif'],

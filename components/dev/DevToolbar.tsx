@@ -41,12 +41,9 @@ export default function DevToolbar() {
               </button>
             ))}
           </div>
-          <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-dm text-gray-400">
+          <div className="mt-3 pt-3 border-t border-white/10 text-xs font-dm text-gray-400">
             <span>
               Current: <span className="font-semibold text-white">{user.plan}</span>
-            </span>
-            <span>
-              AI Queries: <span className="text-white">{user.prismAiQueriesUsed}/{user.prismAiQueryLimit === -1 ? '∞' : user.prismAiQueryLimit}</span>
             </span>
           </div>
         </div>

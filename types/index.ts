@@ -70,8 +70,6 @@ export interface User {
   email: string
   avatar: string
   plan: Plan
-  prismAiQueriesUsed: number
-  prismAiQueryLimit: number
   joinedAt: string
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search, X, SlidersHorizontal, BarChart2, FileText, Database, TrendingUp, ChevronDown } from 'lucide-react'
@@ -36,11 +36,26 @@ function SearchPageInner() {
   const [sortBy, setSortBy] = useState<'relevant' | 'newest' | 'cagr' | 'az'>(
     (searchParams.get('sort') as 'relevant' | 'cagr' | 'az' | 'newest') || 'relevant'
   )
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setQuery(inputValue), 300)
     return () => clearTimeout(timer)
   }, [inputValue])
+
+  // Keyboard: "/" or ⌘K focuses the search input
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const isTyping = ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)
+      if ((e.key === '/' && !isTyping) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
+        e.preventDefault()
+        inputRef.current?.focus()
+        inputRef.current?.select()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const syncURL = useCallback(() => {
     const params = new URLSearchParams()
@@ -91,7 +106,7 @@ function SearchPageInner() {
     results = results.filter((r) =>
       selectedIndustries.some((id) => {
         const ind = mockIndustries.find((i) => i.id === id)
-        return ind && r.industry.toLowerCase().includes(ind.name.toLowerCase().split(' ')[0])
+        return ind && r.industry.toLowerCase() === ind.name.toLowerCase()
       })
     )
   }
@@ -113,35 +128,107 @@ function SearchPageInner() {
   const industryCounts = mockIndustries.map((ind) => ({
     ...ind,
     count: baseResults.filter((r) =>
-      r.industry.toLowerCase().includes(ind.name.toLowerCase().split(' ')[0])
+      r.industry.toLowerCase() === ind.name.toLowerCase()
     ).length,
   })).filter((i) => i.count > 0)
 
   return (
-    <div className="min-h-screen bg-background page-content">
-      {/* Search Header */}
-      <div className="bg-surface-container-lowest border-b border-surface-container-high">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Search market statistics & reports..."
-                className="input-field pl-10"
-              />
+    <div className="min-h-screen bg-paper page-content">
+      {/* ─── COMMAND BAR HEADER ─── */}
+      <div className="bg-ink text-white noise-overlay relative overflow-hidden" style={{ background: '#0b1220' }}>
+        <div aria-hidden className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-32 right-0 w-[500px] h-[500px] rounded-full opacity-[0.12] blur-3xl"
+               style={{ background: 'radial-gradient(circle, var(--signal) 0%, transparent 60%)' }} />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-6 pt-10 pb-6">
+          {/* Label row */}
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-white/40">
+              Search / Curator Intelligence
+            </span>
+            <span className="tabular-nums text-[11px] font-mono uppercase tracking-[0.14em] text-white/40">
+              <span className="text-[#6fd6ce] font-semibold">{results.length.toString().padStart(3, '0')}</span>
+              {' / '}{mockMarkets.length.toString().padStart(3, '0')} matches
+            </span>
+          </div>
+
+          {/* Command input */}
+          <div className="relative">
+            <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder='Try "semiconductors", "digital health", or "CAGR > 15%"…'
+              className="w-full font-display text-[2rem] md:text-[2.5rem] tracking-[-0.025em] bg-transparent text-white placeholder:text-white/25 border-0 focus:outline-none pl-9 pr-32 py-3"
+              style={{ fontWeight: 500 }}
+            />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
               {inputValue && (
                 <button
                   onClick={() => { setInputValue(''); setQuery('') }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors">
+                  className="w-7 h-7 flex items-center justify-center rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                  aria-label="Clear">
                   <X className="w-4 h-4" />
                 </button>
               )}
+              <kbd className="flex items-center gap-1 text-[10px] font-mono text-white/50 border border-white/20 rounded px-1.5 py-0.5 bg-white/5">
+                <span>⌘</span><span>K</span>
+              </kbd>
             </div>
-            <button onClick={() => setQuery(inputValue)}
-              className="btn-primary px-6 active:scale-[0.97]">Search</button>
+            <div className="absolute left-9 bottom-0 right-0 h-px bg-gradient-to-r from-white/25 via-white/10 to-transparent" />
+          </div>
+
+          {/* Type segmented + sort + active filter chips */}
+          <div className="flex items-center gap-3 mt-5 flex-wrap">
+            <div className="flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/10">
+              {[{ id: '', label: 'All', icon: Search }, ...resultTypes].map(t => {
+                const Icon = t.icon
+                const active = t.id === '' ? selectedTypes.length === 0 : selectedTypes.length === 1 && selectedTypes[0] === t.id
+                return (
+                  <button
+                    key={t.id || 'all'}
+                    onClick={() => setSelectedTypes(t.id ? [t.id] : [])}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      active ? 'bg-white text-[#0b1220]' : 'text-white/60 hover:text-white'
+                    }`}
+                    style={active ? { color: '#0b1220' } : undefined}
+                  >
+                    <Icon className="w-3 h-3" />
+                    {t.label}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Active filter chips inline */}
+            {selectedIndustries.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {selectedIndustries.map(id => {
+                  const ind = mockIndustries.find(i => i.id === id)
+                  if (!ind) return null
+                  return (
+                    <span key={id} className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full text-xs bg-signal/15 text-[#6fd6ce] border border-signal/30">
+                      {ind.name}
+                      <button
+                        onClick={() => toggleFilter(selectedIndustries, setSelectedIndustries, id)}
+                        className="w-4 h-4 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+                        aria-label={`Remove ${ind.name}`}>
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+
+            {hasFilters && (
+              <button onClick={clearAll} className="text-[11px] font-mono uppercase tracking-[0.12em] text-white/45 hover:text-white transition-colors ml-auto">
+                Reset all ×
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -149,7 +236,7 @@ function SearchPageInner() {
       <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
         {/* Left Filter Panel — sticky */}
         <aside className="w-64 shrink-0">
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card p-5 sticky top-[88px]">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card p-5">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-primary" />
@@ -300,7 +387,17 @@ function SearchPageInner() {
                         }`}>
                           {result.type}
                         </span>
-                        <span className="text-xs font-body text-on-surface-variant">{result.industry}</span>
+                        {(() => {
+                          const ind = mockIndustries.find(i => i.name.toLowerCase() === result.industry.toLowerCase())
+                          return ind ? (
+                            <Link href={`/search?industry=${ind.id}`}
+                              className="text-xs font-body text-on-surface-variant hover:text-secondary transition-colors">
+                              {result.industry}
+                            </Link>
+                          ) : (
+                            <span className="text-xs font-body text-on-surface-variant">{result.industry}</span>
+                          )
+                        })()}
                         <span className="text-outline">·</span>
                         <span className="text-xs font-body text-on-surface-variant">{result.subIndustry}</span>
                       </div>
@@ -338,14 +435,45 @@ function SearchPageInner() {
               ))}
             </div>
           ) : (
-            /* Empty state */
-            <div className="text-center py-20 bg-surface-container-lowest rounded-xl shadow-card border border-outline-variant/20">
-              <div className="w-20 h-20 rounded-xl flex items-center justify-center mx-auto mb-5 bg-surface-container">
-                <Search className="w-9 h-9 text-outline" />
+            /* Editorial empty state */
+            <div className="relative overflow-hidden rounded-2xl border border-[color:var(--border-light)] bg-white py-16 px-8">
+              <div aria-hidden className="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-40 blur-3xl"
+                   style={{ background: 'radial-gradient(circle, var(--signal-soft) 0%, transparent 70%)' }} />
+              <div className="relative max-w-lg">
+                <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-ink-muted">
+                  Error 0.00 · No matches
+                </span>
+                <h3 className="font-display text-4xl text-ink mt-2 mb-3 tracking-[-0.03em]" style={{ fontWeight: 600 }}>
+                  Nothing found —{' '}
+                  <span className="font-display-italic text-signal" style={{ fontWeight: 500 }}>yet</span>.
+                </h3>
+                <p className="text-sm text-ink-muted leading-relaxed mb-6">
+                  {query
+                    ? <>No markets matched <strong className="text-ink">&ldquo;{query}&rdquo;</strong>. Try broader terms, or browse by industry below.</>
+                    : <>Adjust your filters — the intersection you chose has no coverage in our current databook.</>
+                  }
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button onClick={clearAll} className="btn-accent text-xs px-4 py-2">Reset search</button>
+                  <Link href="/industries" className="btn-outline text-xs px-4 py-2">Browse industries</Link>
+                </div>
+
+                {/* Suggested queries */}
+                <div className="mt-8 pt-6 border-t border-[color:var(--border-subtle)]">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-ink-muted mb-3">Try instead</div>
+                  <div className="flex flex-wrap gap-2">
+                    {['Monoclonal antibodies', 'Electric vehicles', 'Solar energy', 'Digital health', 'Semiconductors'].map(s => (
+                      <button
+                        key={s}
+                        onClick={() => { setInputValue(s); setQuery(s) }}
+                        className="px-3 py-1 rounded-full text-xs text-ink-muted bg-[color:var(--n-100)] hover:bg-signal hover:text-white transition-all"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <h3 className="font-headline font-semibold text-lg text-primary mb-2">No results found</h3>
-              <p className="font-body text-on-surface-variant text-sm mb-5">Try a different search term or adjust your filters</p>
-              <button onClick={clearAll} className="btn-outline text-xs px-4 py-2">Clear all filters</button>
             </div>
           )}
         </main>

@@ -266,9 +266,21 @@ export const testimonials = [
 ]
 
 export const partnerLogos = [
-  'Medtronic', 'GE Healthcare', 'Siemens', 'Johnson & Johnson',
-  'Accenture', 'Google', 'Deloitte', 'KPMG', 'Pfizer', 'Novartis',
-  'Merck', 'AstraZeneca', 'Goldman Sachs', 'McKinsey', 'BCG',
+  { name: 'Medtronic',            domain: 'medtronic.com',            color: '#00a3e0' },
+  { name: 'GE Healthcare',        domain: 'gehealthcare.com',         color: '#0033a0' },
+  { name: 'Siemens Healthineers', domain: 'siemens-healthineers.com', color: '#009999' },
+  { name: 'Johnson & Johnson',    domain: 'jnj.com',                  color: '#d51f2e' },
+  { name: 'Accenture',            domain: 'accenture.com',            color: '#a100ff' },
+  { name: 'Google',               domain: 'google.com',               color: '#4285f4' },
+  { name: 'Deloitte',             domain: 'deloitte.com',             color: '#86bc25' },
+  { name: 'KPMG',                 domain: 'kpmg.com',                 color: '#00338d' },
+  { name: 'Pfizer',               domain: 'pfizer.com',               color: '#0093c8' },
+  { name: 'Novartis',             domain: 'novartis.com',             color: '#e1261c' },
+  { name: 'Merck',                domain: 'merck.com',                color: '#009fdf' },
+  { name: 'AstraZeneca',          domain: 'astrazeneca.com',          color: '#830051' },
+  { name: 'Goldman Sachs',        domain: 'goldmansachs.com',         color: '#1a3c5e' },
+  { name: 'McKinsey & Company',   domain: 'mckinsey.com',             color: '#002d5c' },
+  { name: 'BCG',                  domain: 'bcg.com',                  color: '#00823e' },
 ]
 
 export const pricingPlans = [

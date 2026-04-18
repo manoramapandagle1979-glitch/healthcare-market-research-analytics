@@ -45,6 +45,23 @@ export default function SurveyPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-6 py-10">
+        {/* Progress indicator */}
+        {(() => {
+          const totalSteps = questions.length + 1 // +1 for star rating
+          const answered = Object.keys(answers).length + (rating > 0 ? 1 : 0)
+          const pct = Math.round((answered / totalSteps) * 100)
+          return (
+            <div className="mb-8 bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-body font-medium text-on-surface-variant">Survey Progress</span>
+                <span className="text-xs font-mono font-semibold text-secondary">{answered} / {totalSteps} questions answered</span>
+              </div>
+              <div className="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+                <div className="h-full bg-secondary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          )
+        })()}
         <form onSubmit={e => { e.preventDefault(); setSubmitted(true) }} className="space-y-6">
           {questions.map((q, idx) => (
             <div key={q.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-5">

@@ -2,14 +2,14 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/ui-store'
 import {
   Home, BarChart2, Clock, BookOpen, Building2, Settings,
-  Lightbulb, CreditCard, ChevronDown, ChevronRight,
+  CreditCard, ChevronDown, ChevronRight,
   ChevronLeft, TrendingUp, Contact, ClipboardList,
-  Zap, LogOut, HelpCircle
+  LogOut, HelpCircle, Sparkles
 } from 'lucide-react'
 
 const navItems = [
@@ -19,15 +19,15 @@ const navItems = [
     label: 'Industries',
     href: '/industries',
     children: [
-      { label: 'Biotechnology', href: '/industries' },
-      { label: 'Clinical Diagnostics', href: '/industries' },
-      { label: 'Consumer Goods', href: '/industries' },
-      { label: 'Polymers & Resins', href: '/industries' },
-      { label: 'Technology', href: '/industries' },
+      { label: 'Biotechnology', href: '/search?industry=biotech' },
+      { label: 'Clinical Diagnostics', href: '/search?industry=clinical-diagnostics' },
+      { label: 'Consumer Goods', href: '/search?industry=consumer-goods' },
+      { label: 'Pharmaceuticals', href: '/search?industry=pharma' },
+      { label: 'Telecom & Tech', href: '/search?industry=telecom' },
       { label: 'Explore All', href: '/industries' },
     ],
   },
-  { icon: Clock, label: 'Recent Visited', href: '/my-reports' },
+  { icon: Clock, label: 'Recent Visited', href: '/my-reports?tab=recent' },
   { icon: BookOpen, label: 'My Reports', href: '/my-reports' },
   {
     icon: Building2,
@@ -52,15 +52,6 @@ const navItems = [
       { label: 'Astra', href: '/services/astra' },
     ],
   },
-  {
-    icon: Lightbulb,
-    label: 'Insights',
-    href: '/insights/white-papers',
-    children: [
-      { label: 'White Papers', href: '/insights/white-papers' },
-      { label: 'Thought Leadership', href: '/insights/thought-leadership' },
-    ],
-  },
   { icon: CreditCard, label: 'Pricing', href: '/pricing' },
   { icon: ClipboardList, label: 'Survey', href: '/survey' },
   { icon: Contact, label: 'Contact Us', href: '/contact' },
@@ -70,6 +61,7 @@ export default function Sidebar() {
   const { sidebarCollapsed: collapsed, toggleSidebar } = useUIStore()
   const [expandedItems, setExpandedItems] = useState<string[]>(['Industries'])
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const toggleExpand = (label: string) => {
     setExpandedItems(prev =>
@@ -77,7 +69,19 @@ export default function Sidebar() {
     )
   }
 
-  const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href))
+  const isActive = (href: string) => {
+    const [path, query] = href.split('?')
+    if (query) {
+      const params = new URLSearchParams(query)
+      const matches = pathname === path
+      if (!matches) return false
+      for (const [key, val] of params.entries()) {
+        if (searchParams.get(key) !== val) return false
+      }
+      return true
+    }
+    return pathname === path || (path !== '/' && pathname.startsWith(path + '/'))
+  }
 
   return (
     <div
@@ -114,19 +118,27 @@ export default function Sidebar() {
             <div key={item.label}>
               <div
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200 group relative',
+                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 group relative',
                   active
-                    ? 'text-slate-900 dark:text-white font-bold bg-white dark:bg-slate-800 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/30 hover:translate-x-1'
+                    ? 'text-ink bg-white shadow-[0_1px_2px_rgba(11,18,32,0.04)]'
+                    : 'text-slate-500 hover:text-ink hover:bg-white/60'
                 )}
                 onClick={() => {
                   if (hasChildren && !collapsed) toggleExpand(item.label)
                 }}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                {/* Active marker — signal teal left rail */}
+                {active && (
+                  <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-signal" />
+                )}
+                <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-signal' : '')} />
                 {!collapsed && (
                   <>
-                    <Link href={item.href} className="flex-1 font-inter text-sm" onClick={e => hasChildren && e.preventDefault()}>
+                    <Link
+                      href={item.href}
+                      className={cn('flex-1 text-[13px]', active && 'font-semibold')}
+                      onClick={e => hasChildren && e.preventDefault()}
+                    >
                       {item.label}
                     </Link>
                     {hasChildren && (
@@ -140,7 +152,7 @@ export default function Sidebar() {
                 )}
                 {/* Tooltip on collapsed */}
                 {collapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-xs bg-slate-900 text-white">
+                  <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-xs font-medium bg-ink text-white shadow-lg">
                     {item.label}
                   </div>
                 )}
@@ -150,7 +162,8 @@ export default function Sidebar() {
               {hasChildren && isExpanded && !collapsed && (
                 <div className="ml-9 mt-0.5 space-y-0.5">
                   {item.children!.map((child) => {
-                    const childActive = pathname === child.href
+                    const childPath = child.href.split('?')[0]
+                    const childActive = pathname === childPath
                     return (
                       <Link
                         key={child.label}
@@ -173,14 +186,19 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* CTA Button + Footer links */}
+      {/* Footer links */}
       <div className="mt-auto border-t border-slate-200 dark:border-slate-800 p-3 space-y-1">
-        {!collapsed && (
-          <button className="w-full bg-primary text-white py-2.5 rounded-xl mb-3 font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-[0.98]">
-            <Zap className="w-4 h-4" />
-            Ask Insights
-          </button>
-        )}
+        {/* Ask AI button */}
+        <Link
+          href="/search"
+          className={cn(
+            'flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all bg-signal/10 text-signal hover:bg-signal/20',
+            collapsed && 'justify-center px-2'
+          )}
+        >
+          <Sparkles className="w-4 h-4 shrink-0" />
+          {!collapsed && <span className="truncate">Ask Insights</span>}
+        </Link>
         <Link
           href="/support"
           className={cn(

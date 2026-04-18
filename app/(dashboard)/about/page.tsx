@@ -11,7 +11,7 @@ const milestones = [
   { year: '2018', event: 'Founded with a mission to democratize market intelligence' },
   { year: '2019', event: 'Launched first 5,000 market reports covering healthcare & biotech' },
   { year: '2020', event: 'Expanded to 15,000 reports across 10 industries' },
-  { year: '2021', event: 'Introduced AI-powered analytics engine (Astra)' },
+  { year: '2021', event: 'Introduced Astra ESG & sustainability analytics platform' },
   { year: '2022', event: 'Reached 500+ enterprise clients globally' },
   { year: '2023', event: 'Launched Pipeline & Signal intelligence services' },
   { year: '2024', event: '30,000+ reports, 23+ industries, 1.2M+ data points' },
@@ -23,7 +23,7 @@ export default function AboutPage() {
       <div className="bg-surface-container-lowest border-b border-surface-container-high">
         <div className="max-w-5xl mx-auto px-6 py-8">
           <h1 className="font-headline font-bold text-2xl text-primary mb-1">About Curator Intelligence</h1>
-          <p className="font-body text-sm text-on-surface-variant">The world&apos;s largest portal for market reports & statistics, enhanced with AI</p>
+          <p className="font-body text-sm text-on-surface-variant">The world&apos;s largest portal for market reports &amp; statistics</p>
         </div>
       </div>
 

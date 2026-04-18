@@ -8,9 +8,9 @@ const faqs = [
   {
     category: 'General',
     items: [
-      { q: 'What is Curator Intelligence?', a: 'Curator Intelligence is the world\'s largest portal for market reports and statistics, enhanced with AI. We provide comprehensive market intelligence covering 23+ industries with 30,000+ reports and 1.2M+ data points.' },
+      { q: 'What is Curator Intelligence?', a: 'Curator Intelligence is the world\'s largest portal for market reports and statistics. We provide comprehensive market intelligence covering 23+ industries with 30,000+ reports and 1.2M+ data points.' },
       { q: 'Who are your reports designed for?', a: 'Our reports serve analysts, researchers, executives, investors, and consultants who need reliable market data for strategic decisions. We cover industries from healthcare and biotech to energy, technology, and financial services.' },
-      { q: 'How often is data updated?', a: 'Market reports are updated quarterly or as significant market events occur. Our AI-powered analytics (Astra) provides real-time trend monitoring and alerts.' },
+      { q: 'How often is data updated?', a: 'Market reports are updated quarterly or as significant market events occur. Our Astra platform provides real-time trend monitoring and alerts.' },
     ],
   },
   {

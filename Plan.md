@@ -141,73 +141,73 @@ This plan follows a **3-phase progression**: Static Frontend → API-Connected F
 > Goal: Wire up the existing Go backend API. Replace all static/mock data with real API calls.
 
 ### 2.1 API Client Layer
-- [ ] `lib/api/client.ts` — Base fetch/axios wrapper
+- [x] `lib/api/client.ts` — Base fetch/axios wrapper
   - Base URL: `process.env.NEXT_PUBLIC_API_URL` (default `http://localhost:8081/api/v1`)
   - Auto-attach `Authorization: Bearer <token>` header
   - Auto-refresh token on 401 via `POST /api/v1/auth/refresh`
   - Error normalization (map backend errors to consistent shape)
-- [ ] `lib/api/auth.ts` — `login()`, `refresh()`, `logout()`, `getMe()`
-- [ ] `lib/api/reports.ts` — `getReports(filters)`, `getReportBySlug(slug)`, `searchReports(q)`
-- [ ] `lib/api/categories.ts` — `getCategories()`, `getCategoryBySlug(slug)`, `getCategoryReports(slug)`
-- [ ] `lib/api/blogs.ts` — `getBlogs(filters)`, `getBlogBySlug(slug)`
-- [ ] `lib/api/press-releases.ts` — `getPressReleases(filters)`, `getPressReleaseBySlug(slug)`
-- [ ] `lib/api/forms.ts` — `submitForm(data)`
-- [ ] `lib/api/orders.ts` — `createOrder(data)`, `capturePayPalOrder(id)`, `captureStripeOrder(id)`
-- [ ] `lib/api/authors.ts` — `getAuthors()`, `getAuthorById(id)`
-- [ ] `types/api.ts` — TypeScript interfaces matching backend response shapes (Report, Category, User, Order, Blog, PressRelease, FormSubmission, Author)
+- [x] `lib/api/auth.ts` — `login()`, `refresh()`, `logout()`, `getMe()`
+- [x] `lib/api/reports.ts` — `getReports(filters)`, `getReportBySlug(slug)`, `searchReports(q)`
+- [x] `lib/api/categories.ts` — `getCategories()`, `getCategoryBySlug(slug)`, `getCategoryReports(slug)`
+- [x] `lib/api/blogs.ts` — `getBlogs(filters)`, `getBlogBySlug(slug)`
+- [x] `lib/api/press-releases.ts` — `getPressReleases(filters)`, `getPressReleaseBySlug(slug)`
+- [x] `lib/api/forms.ts` — `submitForm(data)`
+- [x] `lib/api/orders.ts` — `createOrder(data)`, `capturePayPalOrder(id)`, `captureStripeOrder(id)`
+- [x] `lib/api/authors.ts` — `getAuthors()`, `getAuthorById(id)`
+- [x] `types/api.ts` — TypeScript interfaces matching backend response shapes (Report, Category, User, Order, Blog, PressRelease, FormSubmission, Author)
 
 ### 2.2 Authentication Flow
-- [ ] `store/auth-store.ts` — Zustand store for auth state (user, tokens, isAuthenticated)
+- [x] `store/auth-store.ts` — Zustand store for auth state (user, tokens, isAuthenticated)
   - Persist refresh token to httpOnly cookie or secure localStorage
   - Auto-refresh logic on app mount
-- [ ] `/login` page → calls `POST /api/v1/auth/login` → stores tokens → redirects to dashboard
-- [ ] `/register` page → calls backend register endpoint (if available) or shows "Contact admin" message
-- [ ] Auth middleware (client-side): `hooks/useAuth.ts` — redirects unauthenticated users from protected routes
-- [ ] User avatar dropdown populated from `GET /api/v1/users/me`
+- [x] `/login` page → calls `POST /api/v1/auth/login` → stores tokens → redirects to dashboard
+- [x] `/register` page → calls backend register endpoint (if available) or shows "Contact admin" message
+- [x] Auth middleware (client-side): `hooks/useAuth.ts` — redirects unauthenticated users from protected routes
+- [x] User avatar dropdown populated from `GET /api/v1/users/me`
 
 ### 2.3 Zustand Stores (Client State)
-- [ ] `store/ui-store.ts` — sidebar collapsed state, active tab, modals open/close
-- [ ] `store/search-store.ts` — search query, active filters, results
-- [ ] `store/user-store.ts` — authenticated user + plan tier (from auth-store or mock for MVP)
-- [ ] `store/bookmarks-store.ts` — bookmarked report slugs (localStorage persisted)
-- [ ] `store/recent-visits-store.ts` — recently visited report slugs + timestamps (localStorage persisted)
+- [x] `store/ui-store.ts` — sidebar collapsed state, active tab, modals open/close
+- [x] `store/search-store.ts` — search query, active filters, results
+- [x] `store/user-store.ts` — authenticated user + plan tier (from auth-store or mock for MVP)
+- [x] `store/bookmarks-store.ts` — bookmarked report slugs (localStorage persisted)
+- [x] `store/recent-visits-store.ts` — recently visited report slugs + timestamps (localStorage persisted; merged into bookmarks-store)
 
 ### 2.4 Home Page → API
-- [ ] Recent Publications: fetch `GET /api/v1/reports?sort=newest&limit=4&status=published`
-- [ ] Industries sidebar: fetch `GET /api/v1/categories`
-- [ ] Search bar: navigates to `/search?q=...`
+- [x] Recent Publications: fetch `GET /api/v1/reports?sort=newest&limit=4&status=published`
+- [x] Industries sidebar: fetch `GET /api/v1/categories`
+- [x] Search bar: navigates to `/search?q=...`
 
 ### 2.5 Industries Page → API
-- [ ] Fetch `GET /api/v1/categories` → group alphabetically
-- [ ] Each category's reports: fetch `GET /api/v1/categories/:slug/reports` (lazy on expand or pre-fetched)
-- [ ] Sub-industry links → `/search?category=slug`
+- [x] Fetch `GET /api/v1/categories` → group alphabetically
+- [x] Each category's reports: fetch `GET /api/v1/categories/:slug/reports` (lazy on expand or pre-fetched)
+- [x] Sub-industry links → `/search?category=slug`
 
 ### 2.6 Search Page → API
-- [ ] Search query: `GET /api/v1/search?q=...`
-- [ ] Category filter: `GET /api/v1/reports?category_slug=...`
-- [ ] Real-time filter updates via URL params + SWR/React Query caching
-- [ ] Counts per filter computed from response metadata
+- [x] Search query: `GET /api/v1/search?q=...`
+- [x] Category filter: `GET /api/v1/reports?category_slug=...`
+- [x] Real-time filter updates via URL params + SWR/React Query caching
+- [x] Counts per filter computed from response metadata
 
 ### 2.7 Market Outlook Page → API
-- [ ] Fetch `GET /api/v1/reports/:slug` on page load
-- [ ] Map `report.market_metrics` → KPI cards (revenue, forecast, CAGR)
-- [ ] Map `report.market_metrics` → generate bar chart data (interpolate yearly values between current and forecast)
-- [ ] Map `report.key_players` → Companies tab table
-- [ ] Map `report.sections.tableOfContents` → Scope tab
-- [ ] Map `report.sections.marketDetails` → Overview text + highlights
-- [ ] Map `report.faqs` → FAQ accordion
-- [ ] Map `report.geography` → region chips + "Report Coverage" card
-- [ ] Related markets: `GET /api/v1/categories/:slug/reports` (same category, exclude current)
-- [ ] Request Customization form: `POST /api/v1/forms/submissions` with category "request-customization"
+- [x] Fetch `GET /api/v1/reports/:slug` on page load
+- [x] Map `report.market_metrics` → KPI cards (revenue, forecast, CAGR)
+- [x] Map `report.market_metrics` → generate bar chart data (interpolate yearly values between current and forecast)
+- [x] Map `report.key_players` → Companies tab table
+- [x] Map `report.sections.tableOfContents` → Scope tab
+- [x] Map `report.sections.marketDetails` → Overview text + highlights
+- [x] Map `report.faqs` → FAQ accordion
+- [x] Map `report.geography` → region chips + "Report Coverage" card
+- [x] Related markets: `GET /api/v1/categories/:slug/reports` (same category, exclude current)
+- [x] Request Customization form: `POST /api/v1/forms/submissions` with category "request-customization"
 
 ### 2.8 Companies Pages → Data
-- [ ] Aggregate `key_players` from all reports (client-side or dedicated endpoint if needed)
-- [ ] `/companies` — display aggregated list with search/filter
-- [ ] `/companies/[slug]` — find company across reports, show linked reports
+- [x] Aggregate `key_players` from all reports (client-side or dedicated endpoint if needed)
+- [x] `/companies` — display aggregated list with search/filter
+- [x] `/companies/[slug]` — find company across reports, show linked reports
 
 ### 2.9 Insights Pages → API
-- [ ] White Papers: `GET /api/v1/blogs?status=published`
-- [ ] Thought Leadership: `GET /api/v1/press-releases?status=published`
+- [x] White Papers: `GET /api/v1/blogs?status=published`
+- [x] Thought Leadership: `GET /api/v1/press-releases?status=published`
 
 ### 2.10 Checkout Flow → API
 - [ ] `/checkout/[reportSlug]` — fetch report for pricing, show order form
@@ -216,38 +216,38 @@ This plan follows a **3-phase progression**: Static Frontend → API-Connected F
 - [ ] `/order-success` — confirmation page
 
 ### 2.11 Contact & Forms → API
-- [ ] `/contact` page form → `POST /api/v1/forms/submissions` (category: "contact")
-- [ ] Request Sample forms → `POST /api/v1/forms/submissions` (category: "request-sample")
-- [ ] Analyst Callback → `POST /api/v1/forms/submissions` (category: "schedule-demo")
+- [x] `/contact` page form → `POST /api/v1/forms/submissions` (category: "contact")
+- [x] Request Sample forms → `POST /api/v1/forms/submissions` (category: "request-sample")
+- [x] Analyst Callback → `POST /api/v1/forms/submissions` (category: "schedule-demo")
 
 ### 2.12 Profile Page → API
-- [ ] Profile tab: `GET /api/v1/users/me` → display, allow edits (if PUT /users/:id available for self-update)
-- [ ] Password tab: password change (if endpoint available)
-- [ ] Subscription tab: show current plan (mock for MVP, real when backend supports plans)
+- [x] Profile tab: `GET /api/v1/users/me` → display, allow edits (if PUT /users/:id available for self-update)
+- [x] Password tab: password change (if endpoint available)
+- [x] Subscription tab: show current plan (mock for MVP, real when backend supports plans)
 
 ### 2.13 Bookmarks & Recent Visits (Client-Side)
-- [ ] Star/bookmark icon on market pages toggles in `bookmarks-store` (localStorage)
-- [ ] Recent visits tracked in `recent-visits-store` (localStorage)
-- [ ] `/my-reports` reads from stores
-- [ ] Persisted via zustand/persist
+- [x] Star/bookmark icon on market pages toggles in `bookmarks-store` (localStorage)
+- [x] Recent visits tracked in `recent-visits-store` (localStorage)
+- [x] `/my-reports` reads from stores
+- [x] Persisted via zustand/persist
 
 ### 2.14 Plan Gating (Mock for MVP)
-- [ ] Dev toolbar (dev-only): plan switcher to toggle FREE/BASIC/PREMIUM/ENTERPRISE
-- [ ] `PlanGate` renders blur + upgrade overlay based on store plan
-- [ ] Statistics tab blurs rows beyond tier limit
-- [ ] Dashboard tab shows upgrade modal for FREE tier
+- [x] Dev toolbar (dev-only): plan switcher to toggle FREE/BASIC/PREMIUM/ENTERPRISE
+- [x] `PlanGate` renders blur + upgrade overlay based on store plan
+- [x] Statistics tab blurs rows beyond tier limit
+- [x] Dashboard tab shows upgrade modal for FREE tier
 
 ### 2.15 Navigation & Interactions
 - [ ] Mega-menu dropdowns populated from `GET /api/v1/categories`
 - [ ] Industries sidebar sub-menu expanded/collapsed via Zustand
-- [ ] Sidebar collapse state persisted to localStorage
-- [ ] Search input in TopNav triggers navigation to `/search?q=...`
+- [x] Sidebar collapse state persisted to localStorage
+- [x] Search input in TopNav triggers navigation to `/search?q=...`
 
 ### 2.16 Loading & Error States
-- [ ] Loading skeletons for all data-fetching pages
-- [ ] Error boundaries + empty states connected to real 404s
-- [ ] Toast notifications for form submissions (success/error)
-- [ ] Optimistic UI for bookmark/unbookmark
+- [x] Loading skeletons for all data-fetching pages
+- [x] Error boundaries + empty states connected to real 404s
+- [x] Toast notifications for form submissions (success/error)
+- [x] Optimistic UI for bookmark/unbookmark
 
 ---
 

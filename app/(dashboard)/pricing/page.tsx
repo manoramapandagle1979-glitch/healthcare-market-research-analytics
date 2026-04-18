@@ -36,7 +36,7 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <section className="py-12 bg-primary-container">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-center py-6 overflow-visible">
             {pricingPlans.map(plan => (
               <PricingCard key={plan.id} plan={plan} />
             ))}
@@ -134,7 +134,7 @@ export default function PricingPage() {
                     <Star key={si} className="w-3.5 h-3.5 fill-secondary-fixed text-secondary-fixed" />
                   ))}
                 </div>
-                <blockquote className="font-body text-sm leading-relaxed mb-5 italic text-white/72">
+                <blockquote className="font-body text-sm leading-relaxed mb-5 italic" style={{ color: 'rgba(255,255,255,0.82)' }}>
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-3">

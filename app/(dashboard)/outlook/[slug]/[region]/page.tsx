@@ -7,10 +7,10 @@ import {
   Lock, Globe, TrendingUp, DollarSign, BarChart2, Building2, FileText,
   Settings, Info, ExternalLink, MapPin, Users, Globe2, Star
 } from 'lucide-react'
-import { mockMarkets } from '@/lib/mock-data'
+import { mockMarkets, mockIndustries } from '@/lib/mock-data'
 import { useBookmarksStore } from '@/store/bookmarks-store'
+import { useUserStore } from '@/store/user-store'
 import BarChartCard from '@/components/charts/BarChartCard'
-import PlanGate from '@/components/ui/PlanGate'
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -49,6 +49,25 @@ const segmentData = [
   { name: '2023', human: 97, humanized: 72, chimeric: 31, murine: 8 },
 ]
 
+const regionalBarData = [
+  { year: '2018', 'North America': 45.2, 'Europe': 38.1, 'Asia Pacific': 22.0, 'RoW': 10.1 },
+  { year: '2019', 'North America': 54.1, 'Europe': 44.2, 'Asia Pacific': 27.3, 'RoW': 11.8 },
+  { year: '2020', 'North America': 65.8, 'Europe': 52.0, 'Asia Pacific': 33.7, 'RoW': 13.9 },
+  { year: '2021', 'North America': 74.3, 'Europe': 58.1, 'Asia Pacific': 38.1, 'RoW': 15.2 },
+  { year: '2022', 'North America': 82.6, 'Europe': 60.9, 'Asia Pacific': 40.4, 'RoW': 17.1 },
+  { year: '2023', 'North America': 88.8, 'Europe': 63.4, 'Asia Pacific': 42.3, 'RoW': 16.9 },
+  { year: '2025E', 'North America': 118.2, 'Europe': 83.7, 'Asia Pacific': 62.8, 'RoW': 22.3 },
+  { year: '2027E', 'North America': 152.1, 'Europe': 108.4, 'Asia Pacific': 88.3, 'RoW': 30.1 },
+  { year: '2030E', 'North America': 209.3, 'Europe': 148.7, 'Asia Pacific': 135.2, 'RoW': 45.5 },
+]
+
+const pieData2030 = [
+  { name: 'North America', value: 39 },
+  { name: 'Europe', value: 28 },
+  { name: 'Asia Pacific', value: 25 },
+  { name: 'Rest of World', value: 8 },
+]
+
 const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'dashboard', label: 'Dashboard' },
@@ -59,14 +78,57 @@ const tabs = [
   { id: 'customization', label: 'Request Customization', icon: Info },
 ]
 
+// ─── Locked chart wrapper: blurs content and shows an unlock CTA for free users ───
+function LockedChart({
+  title,
+  children,
+  height = 300,
+}: {
+  title: string
+  children: React.ReactNode
+  height?: number
+}) {
+  const { user } = useUserStore()
+  const locked = user.plan === 'FREE'
+
+  return (
+    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b border-surface-container">
+        <span className="font-headline font-semibold text-sm text-primary">{title}</span>
+        <button className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant text-xs font-body text-on-surface-variant hover:border-secondary transition-colors">
+          <Download className="w-3 h-3 mr-0.5" />
+          Download
+        </button>
+      </div>
+      <div className="relative p-4" style={{ minHeight: height }}>
+        <div className={locked ? 'blur-sm pointer-events-none select-none opacity-70' : ''}>
+          {children}
+        </div>
+        {locked && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Link
+              href="/pricing"
+              className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-body font-bold shadow-2xl hover:opacity-90 transition-opacity"
+              style={{ background: 'var(--signal)', color: '#fff' }}
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Unlock Premium
+              <span className="text-xs opacity-80">▲</span>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function MarketOutlookPage({ params }: { params: { slug: string; region: string } }) {
   const [activeTab, setActiveTab] = useState('overview')
   const [dataTreeOpen, setDataTreeOpen] = useState(false)
-  const [chartType, setChartType] = useState<'bar' | 'line' | 'pie'>('bar')
-  const [segmentFilter, setSegmentFilter] = useState('global')
 
   const { toggleBookmark, isBookmarked, addRecentVisit } = useBookmarksStore()
   const market = mockMarkets.find(m => m.slug === params.slug) || mockMarkets[0]
+  const industryId = mockIndustries.find(i => i.name.toLowerCase() === market.industry.toLowerCase())?.id ?? ''
   const bookmarked = isBookmarked(market.slug)
 
   // Log recent visit on mount
@@ -75,89 +137,188 @@ export default function MarketOutlookPage({ params }: { params: { slug: string; 
   }, [market.slug, addRecentVisit])
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* ─── PAGE HEADER ─── */}
-      <div className="bg-surface-container-lowest border-b border-surface-container-high">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen bg-paper">
+      {/* ═══════════ EDITORIAL TOP-FOLD ═══════════ */}
+      <section className="relative overflow-hidden bg-ink text-white noise-overlay" style={{ background: '#0b1220' }}>
+        {/* Ambient signal wash */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-[640px] h-[640px] rounded-full opacity-[0.18] blur-3xl"
+               style={{ background: 'radial-gradient(circle, var(--signal) 0%, transparent 60%)' }} />
+          <div className="absolute -bottom-60 -left-20 w-[520px] h-[520px] rounded-full opacity-[0.14] blur-3xl"
+               style={{ background: 'radial-gradient(circle, var(--ember) 0%, transparent 60%)' }} />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-6 pt-8 pb-0">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs font-body text-on-surface-variant mb-4">
-            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <nav className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.14em] text-white/45 mb-8">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/industries" className="hover:text-primary transition-colors">{market.industry}</Link>
+            <Link href={industryId ? `/search?industry=${industryId}` : '/industries'} className="hover:text-white transition-colors">{market.industry}</Link>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-on-surface">{market.title}</span>
+            <span className="text-white/80 normal-case tracking-normal font-body">{market.title}</span>
           </nav>
 
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-body font-bold text-white bg-secondary">
-                  PDF Report Available
+          <div className="grid grid-cols-[1fr_auto] gap-8 items-end mb-10">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-signal/15 text-[#6fd6ce] border border-signal/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6fd6ce] animate-pulse" />
+                  Live Outlook
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-body font-medium text-on-secondary-container bg-secondary-container/40">
+                <Link
+                  href={industryId ? `/search?industry=${industryId}` : '/industries'}
+                  className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider text-white/60 bg-white/5 border border-white/10 hover:text-white hover:border-white/25 transition-all"
+                >
                   {market.industry}
+                </Link>
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider text-white/60 bg-white/5 border border-white/10">
+                  {market.yearStart}–{market.yearEnd}
                 </span>
               </div>
-              <h1 className="font-headline font-bold text-xl text-primary leading-tight mb-2">
-                Global {market.title} Market Size &amp; Outlook, {market.yearStart}–{market.yearEnd}
+
+              <h1 className="font-display text-[3rem] leading-[1.02] tracking-[-0.035em] text-white mb-5 max-w-3xl" style={{ fontWeight: 600 }}>
+                Global {market.title}{' '}
+                <span className="font-display-italic text-[#eadfc6]" style={{ fontWeight: 500 }}>market size</span>{' '}
+                &amp; outlook.
               </h1>
-              <p className="font-body text-sm text-on-surface-variant max-w-2xl leading-relaxed">
+
+              <p className="font-body text-[15px] max-w-2xl leading-[1.65]" style={{ color: 'rgba(255,255,255,0.88)' }}>
                 {market.description}
               </p>
             </div>
 
+            {/* Action stack */}
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => toggleBookmark(market.slug)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body font-medium border border-outline-variant hover:border-secondary hover:text-secondary transition-all">
-                {bookmarked
-                  ? <><BookmarkCheck className="w-4 h-4 text-secondary" /><span>Saved</span></>
-                  : <><Bookmark className="w-4 h-4" /><span>Save</span></>}
+                aria-label={bookmarked ? 'Remove bookmark' : 'Save to bookmarks'}
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white/60 transition-all"
+              >
+                {bookmarked ? <BookmarkCheck className="w-4 h-4 text-[#6fd6ce]" /> : <Bookmark className="w-4 h-4" />}
               </button>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body font-medium border border-outline-variant hover:border-primary hover:text-primary transition-all">
+              <button
+                aria-label="Share"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white/60 transition-all"
+              >
                 <Share2 className="w-4 h-4" />
-                <span>Share</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-body font-semibold text-white bg-primary transition-all hover:opacity-90">
-                <Download className="w-4 h-4" />
+              <button
+                className="group flex items-center gap-2 pl-5 pr-4 py-2.5 rounded-full text-sm font-semibold bg-white hover:bg-[#6fd6ce] transition-all"
+                style={{ color: '#0b1220', boxShadow: '0 8px 24px -8px rgba(13,107,99,0.55)' }}
+              >
                 Buy Report
+                <span className="w-6 h-6 rounded-full flex items-center justify-center group-hover:translate-x-0.5 transition-transform" style={{ background: '#0b1220' }}>
+                  <Download className="w-3 h-3" style={{ color: '#ffffff' }} />
+                </span>
               </button>
             </div>
           </div>
 
-          {/* Data Tree */}
-          <button
-            onClick={() => setDataTreeOpen(!dataTreeOpen)}
-            className="flex items-center gap-2 mt-4 text-xs font-body font-medium text-secondary hover:text-on-secondary-fixed-variant transition-colors">
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${dataTreeOpen ? 'rotate-180' : ''}`} />
-            Data Tree
-          </button>
-          {dataTreeOpen && (
-            <div className="mt-2 p-3 bg-surface-container rounded-xl text-xs font-body text-on-surface-variant space-y-1">
-              <div className="font-semibold text-primary">{market.industry}</div>
-              <div className="ml-4">└ {market.subIndustry}</div>
-              <div className="ml-8">└ Global {market.title} Market Outlook, {market.yearStart}–{market.yearEnd}</div>
-            </div>
-          )}
-        </div>
+          {/* ─── Oversized stat row ─── */}
+          <div className="grid grid-cols-3 divide-x divide-white/10 border-y border-white/10 -mx-6 px-6">
+            {[
+              {
+                label: `TAM ${market.yearEnd}`,
+                value: `$${market.forecast}`,
+                suffix: 'B',
+                hint: `From $${market.revenue}B in ${market.yearStart}`,
+              },
+              {
+                label: `CAGR ${market.yearStart}–${market.yearEnd}`,
+                value: `${market.cagr}`,
+                suffix: '%',
+                hint: 'Compounded annual growth',
+              },
+              {
+                label: 'Coverage',
+                value: '200+',
+                suffix: 'CO',
+                hint: `${market.companies.length} companies profiled · 5 regions`,
+              },
+            ].map((stat, i) => (
+              <div key={stat.label} className={`py-8 ${i === 0 ? 'pr-8' : i === 2 ? 'pl-8' : 'px-8'}`}>
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/40 mb-3">
+                  {stat.label}
+                </div>
+                <div className="flex items-baseline gap-1.5 mb-2 overflow-hidden">
+                  <span className="font-display leading-none tracking-[-0.045em] tabular-nums" style={{ fontWeight: 600, fontSize: 'clamp(2.5rem, 5vw, 5rem)', color: '#ffffff' }}>
+                    {stat.value}
+                  </span>
+                  <span className="font-mono text-2xl tabular-nums font-semibold" style={{ color: '#6fd6ce' }}>{stat.suffix}</span>
+                </div>
+                <div className="text-xs font-body" style={{ color: 'rgba(255,255,255,0.75)' }}>{stat.hint}</div>
+              </div>
+            ))}
+          </div>
 
-        {/* ─── STICKY TAB BAR ─── */}
-        <div className="border-t border-surface-container">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
-              {tabs.map(tab => (
-                <button key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-4 py-3.5 text-sm font-body font-medium border-b-2 transition-all whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'border-primary text-primary'
-                      : 'border-transparent text-on-surface-variant hover:text-primary'
-                  }`}>
-                  {tab.label}
-                  {tab.icon && <tab.icon className="w-3 h-3" />}
-                </button>
-              ))}
+          {/* ─── Edge-to-edge sparkline ribbon ─── */}
+          <div className="-mx-6 h-16 relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={market.dataPoints} margin={{ top: 8, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="sparkStroke" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#6fd6ce" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#6fd6ce" stopOpacity="1" />
+                  </linearGradient>
+                </defs>
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="url(#sparkStroke)"
+                  strokeWidth={1.5}
+                  dot={false}
+                  isAnimationActive
+                  animationDuration={1400}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-x-0 top-0 flex justify-between text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 px-1">
+              <span>{market.yearStart}</span>
+              <span>{market.yearEnd}</span>
             </div>
+          </div>
+
+          {/* Optional data tree */}
+          <div className="pb-6">
+            <button
+              onClick={() => setDataTreeOpen(!dataTreeOpen)}
+              className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-white/50 hover:text-white transition-colors"
+            >
+              <ChevronDown className={`w-3 h-3 transition-transform ${dataTreeOpen ? 'rotate-180' : ''}`} />
+              Data tree
+            </button>
+            {dataTreeOpen && (
+              <div className="mt-3 p-3 rounded-lg text-xs font-body text-white/65 space-y-1 bg-white/5 border border-white/10">
+                <div className="font-semibold text-white">{market.industry}</div>
+                <div className="ml-4">└ {market.subIndustry}</div>
+                <div className="ml-8">└ Global {market.title} Market Outlook, {market.yearStart}–{market.yearEnd}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ STICKY TAB BAR ═══════════ */}
+      <div className="sticky top-0 z-20 bg-paper/90 backdrop-blur-md border-b border-[color:var(--border-light)]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative flex items-center gap-1.5 px-4 py-3.5 text-sm font-medium transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'text-ink'
+                    : 'text-slate-500 hover:text-ink'
+                }`}
+              >
+                {tab.label}
+                {tab.icon && <tab.icon className="w-3 h-3" />}
+                {activeTab === tab.id && (
+                  <span className="absolute left-3 right-3 -bottom-px h-[2px] bg-signal rounded-full" />
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -411,12 +572,115 @@ export default function MarketOutlookPage({ params }: { params: { slug: string; 
 
         {/* ════════════════════════ TAB 2: DASHBOARD ════════════════════════ */}
         {activeTab === 'dashboard' && (
-          <PlanGate
-            requiredPlan="BASIC"
-            message="Upgrade to access the Interactive Dashboard"
-            className="min-h-[500px]">
-            <div />
-          </PlanGate>
+          <div className="space-y-6">
+
+            {/* Stacked regional bar chart */}
+            <LockedChart
+              title={`${market.title} market size by region, ${market.yearStart}–${market.yearEnd} (US$B)`}
+              height={340}
+            >
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={regionalBarData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
+                  <XAxis dataKey="year" tick={{ fontSize: 11, fontFamily: 'inherit' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fontFamily: 'inherit' }} tickFormatter={(v) => `$${v}B`} axisLine={false} tickLine={false} />
+                  <Tooltip formatter={(v) => [`$${v}B`]} />
+                  <Legend wrapperStyle={{ fontSize: 11, paddingTop: 12 }} />
+                  <Bar dataKey="North America" stackId="a" fill="#091426" />
+                  <Bar dataKey="Europe" stackId="a" fill="#006a61" />
+                  <Bar dataKey="Asia Pacific" stackId="a" fill="#86f2e4" />
+                  <Bar dataKey="RoW" stackId="a" fill="#1c0048" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </LockedChart>
+
+            {/* Pie charts — 2023 vs 2030 side by side */}
+            <div className="grid grid-cols-2 gap-6">
+              <LockedChart
+                title={`${market.title} market share, 2023 (USD Billion)`}
+                height={300}
+              >
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine
+                    >
+                      {pieData.map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v) => [`${v}%`]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </LockedChart>
+
+              <LockedChart
+                title={`${market.title} market share, 2030 Forecast (USD Billion)`}
+                height={300}
+              >
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={pieData2030}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine
+                    >
+                      {pieData2030.map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v) => [`${v}%`]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </LockedChart>
+            </div>
+
+            {/* Statistics table by application */}
+            <LockedChart
+              title={`${market.title} market statistics by application, 2021–2030 (US$B)`}
+              height={260}
+            >
+              <div className="overflow-x-auto">
+                <table className="data-table w-full text-xs">
+                  <thead>
+                    <tr>
+                      <th className="min-w-[180px] text-left">Application</th>
+                      {['2021', '2022', '2023', '2024E', '2025E', '2026E', '2027E', '2028E', '2029E', '2030E'].map(y => (
+                        <th key={y} className="text-center">{y}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { seg: 'Cancer',              vals: ['95.2', '111.4', '130.8', '152.6', '177.4', '204.8', '234.6', '268.2', '304.8', '344.9'] },
+                      { seg: 'Autoimmune Disease',  vals: ['48.1', '55.6', '63.8', '73.1', '83.8', '95.4', '108.2', '122.4', '138.1', '155.6'] },
+                      { seg: 'Infectious Diseases', vals: ['22.4', '26.1', '30.4', '35.2', '40.8', '47.1', '54.2', '62.1', '71.0', '81.0'] },
+                      { seg: 'Ophthalmic Diseases', vals: ['18.7', '21.4', '24.8', '28.6', '33.0', '37.8', '43.2', '49.2', '55.8', '63.2'] },
+                      { seg: 'Others',              vals: ['14.1', '16.2', '18.6', '21.2', '24.1', '27.4', '30.9', '34.9', '39.3', '44.2'] },
+                    ].map(row => (
+                      <tr key={row.seg}>
+                        <td className="font-body font-medium text-on-surface">{row.seg}</td>
+                        {row.vals.map((v, i) => (
+                          <td key={i} className="font-body text-on-surface-variant text-center">{v}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </LockedChart>
+
+          </div>
         )}
 
         {/* ════════════════════════ TAB 3: STATISTICS ════════════════════════ */}

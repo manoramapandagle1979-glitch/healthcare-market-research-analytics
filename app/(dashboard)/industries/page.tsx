@@ -93,7 +93,7 @@ export default function IndustriesPage() {
                 <div className="py-5 px-6 pl-8 grid grid-cols-[240px,1fr] gap-6 items-start">
                   {/* Industry Name */}
                   <div className="py-1">
-                    <Link href={`/search?industry=${encodeURIComponent(industry.name)}`}
+                    <Link href={`/search?industry=${industry.id}`}
                       className="font-headline font-bold text-sm text-primary hover:text-secondary transition-colors block mb-1">
                       {industry.name}
                     </Link>
@@ -126,7 +126,7 @@ export default function IndustriesPage() {
                 {/* Card top accent */}
                 <div className="absolute top-0 left-0 right-0 h-0.5 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left bg-secondary" />
                 <div className="flex items-start justify-between mb-3">
-                  <Link href={`/search?industry=${encodeURIComponent(industry.name)}`}
+                  <Link href={`/search?industry=${industry.id}`}
                     className="font-headline font-bold text-sm leading-tight text-primary hover:text-secondary transition-colors">
                     {industry.name}
                   </Link>

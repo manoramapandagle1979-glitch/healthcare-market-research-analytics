@@ -67,40 +67,6 @@ export default function TopNav() {
 
         {/* Nav Items */}
         <nav className="hidden lg:flex items-center gap-1">
-          {/* Statistics */}
-          <div className="relative"
-            onMouseEnter={() => handleDropdownEnter('statistics')}
-            onMouseLeave={handleDropdownLeave}>
-            <button className={cn(
-              'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-manrope font-medium tracking-tight transition-colors duration-150',
-              activeDropdown === 'statistics'
-                ? 'text-slate-900 dark:text-white'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50'
-            )}>
-              Statistics <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-            {activeDropdown === 'statistics' && (
-              <div className="absolute top-full left-0 mt-1 w-[640px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-5 z-50">
-                <div className="grid grid-cols-4 gap-4 mb-4">
-                  {industryColumns.map((col, ci) => (
-                    <div key={ci} className="space-y-1">
-                      {col.map(ind => (
-                        <Link key={ind.id} href="/industries"
-                          className="block text-xs font-inter text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white hover:bg-surface-container-low dark:hover:bg-slate-700 px-2 py-1 rounded-lg transition-colors">
-                          {ind.name}
-                        </Link>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t border-slate-100 dark:border-slate-700 pt-3">
-                  <Link href="/industries" className="text-xs font-inter font-semibold text-secondary hover:text-on-secondary-fixed-variant transition-colors">
-                    → View All Statistics
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* Reports */}
           <div className="relative"

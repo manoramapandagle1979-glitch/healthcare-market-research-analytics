@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -57,7 +57,7 @@ const navItems = [
   { icon: Contact, label: 'Contact Us', href: '/contact' },
 ]
 
-export default function Sidebar() {
+function SidebarInner() {
   const { sidebarCollapsed: collapsed, toggleSidebar } = useUIStore()
   const [expandedItems, setExpandedItems] = useState<string[]>(['Industries'])
   const pathname = usePathname()
@@ -75,7 +75,7 @@ export default function Sidebar() {
       const params = new URLSearchParams(query)
       const matches = pathname === path
       if (!matches) return false
-      for (const [key, val] of params.entries()) {
+      for (const [key, val] of Array.from(params.entries())) {
         if (searchParams.get(key) !== val) return false
       }
       return true
@@ -235,5 +235,13 @@ export default function Sidebar() {
         </button>
       </div>
     </div>
+  )
+}
+
+export default function Sidebar() {
+  return (
+    <Suspense fallback={null}>
+      <SidebarInner />
+    </Suspense>
   )
 }

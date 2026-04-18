@@ -11,7 +11,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
 
   const company = mockCompanies.find(c => c.slug === params.slug) || mockCompanies[0]
 
-  const tags = [...new Set(['Healthcare', 'Biotechnology', 'Pharmaceutical', company.sector, company.industry].filter(Boolean))]
+  const tags = Array.from(new Set(['Healthcare', 'Biotechnology', 'Pharmaceutical', company.sector, company.industry].filter(Boolean)))
 
   return (
     <div className="min-h-screen bg-background">

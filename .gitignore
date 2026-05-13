@@ -34,6 +34,6 @@ Thumbs.db
 
 # WordPress source dumps and generated extracts (regenerable from scripts/)
 *.sql
-lib/wp-data/reports.json
 lib/wp-data/reports/
+lib/wp-data/reports.json
 

@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, ExternalLink, ChevronDown, Grid3X3, LayoutList } from 'lucide-react'
-import { industries } from '@/lib/data'
+import { wpIndustriesAsIndustry } from '@/lib/wp-data/industries'
+
+const industries = wpIndustriesAsIndustry
 
 export default function IndustriesPage() {
   const [search, setSearch] = useState('')

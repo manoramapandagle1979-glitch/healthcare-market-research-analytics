@@ -44,7 +44,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                   : <><Bookmark className="w-4 h-4" /><span>Save</span></>}
               </button>
               {company.website && (
-                <a href={`https://${company.website}`} target="_blank" rel="noopener noreferrer"
+                <a href={`https://${company.website}`} target="_blank" rel="nofollow noopener noreferrer"
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-body font-semibold text-white bg-primary transition-all hover:opacity-90">
                   Visit Website
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -117,7 +117,7 @@ export default function CompanyProfilePage({ params }: { params: { slug: string 
                     <div key={item.label}>
                       <div className="text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-wider mb-1">{item.label}</div>
                       {item.isLink && company.website
-                        ? <a href={`https://${company.website}`} target="_blank" rel="noopener noreferrer"
+                        ? <a href={`https://${company.website}`} target="_blank" rel="nofollow noopener noreferrer"
                             className="font-body text-sm text-secondary hover:text-on-secondary-fixed-variant transition-colors">
                             {item.value}
                           </a>

@@ -31,3 +31,9 @@ Thumbs.db
 
 # claude
 .claude/
+
+# WordPress source dumps and generated extracts (regenerable from scripts/)
+*.sql
+lib/wp-data/reports.json
+lib/wp-data/reports/
+

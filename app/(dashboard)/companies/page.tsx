@@ -1,20 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Search, ChevronLeft, ChevronRight, ChevronDown, MapPin, Users } from 'lucide-react'
 import { mockCompanies } from '@/lib/mock-data'
 import { mockIndustries } from '@/lib/mock-data'
 
 const sectors = ['Healthcare', 'Technology', 'Energy', 'Financial Services', 'Industrials', 'Consumer Goods']
 
-export default function CompaniesPage() {
+function CompaniesPageInner() {
+  const searchParams = useSearchParams()
+  const urlSector = searchParams.get('sector') || ''
+  const urlIndustry = searchParams.get('industry') || ''
+
   const [search, setSearch] = useState('')
-  const [sector, setSector] = useState('')
-  const [industry, setIndustry] = useState('')
+  const [sector, setSector] = useState(urlSector)
+  const [industry, setIndustry] = useState(urlIndustry)
   const [sortBy, setSortBy] = useState('latest')
   const [page, setPage] = useState(1)
   const perPage = 8
+
+  // Keep filters in sync if the user navigates to a new sector via the sidebar.
+  useEffect(() => { setSector(urlSector) }, [urlSector])
+  useEffect(() => { setIndustry(urlIndustry) }, [urlIndustry])
 
   let filtered = mockCompanies.filter(c => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.description.toLowerCase().includes(search.toLowerCase())
@@ -188,5 +197,13 @@ export default function CompaniesPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CompaniesPage() {
+  return (
+    <Suspense fallback={null}>
+      <CompaniesPageInner />
+    </Suspense>
   )
 }

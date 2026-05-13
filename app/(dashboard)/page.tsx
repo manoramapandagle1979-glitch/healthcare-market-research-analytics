@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Search, ArrowRight, Star, TrendingUp, BarChart2, Globe, Database, Activity, Users, Linkedin, Twitter } from 'lucide-react'
-import { mockMarkets as markets } from '@/lib/mock-data'
 import { testimonials, partnerLogos, pricingPlans, stats } from '@/lib/data'
+import { recentReports } from '@/lib/wp-data/recent-reports'
 import PricingCard from '@/components/ui/PricingCard'
 import StatCounter from '@/components/ui/StatCounter'
 
@@ -74,13 +74,6 @@ const serviceTabs = [
     ],
     color: '#0d6b63',
   },
-]
-
-const recentPublications = [
-  { slug: 'monoclonal-antibodies', title: 'Global Monoclonal Antibodies Market', industry: 'Biotechnology', industryId: 'biotech', revenue: '$211.4B', cagr: '11.2%', year: '2030' },
-  { slug: 'electric-vehicles', title: 'Electric Vehicles Market', industry: 'Automotive', industryId: 'automotive', revenue: '$951.9B', cagr: '13.7%', year: '2030' },
-  { slug: 'solar-energy', title: 'Global Solar Energy Market', industry: 'Energy & Power', industryId: 'energy', revenue: '$612.4B', cagr: '15.5%', year: '2030' },
-  { slug: 'digital-health', title: 'Digital Health Market', industry: 'Healthcare', industryId: 'healthcare', revenue: '$809.2B', cagr: '21.2%', year: '2030' },
 ]
 
 const popularChips = ['Biotechnology', 'Clinical Diagnostics', 'Consumer Goods', 'Polymers & Resins', 'Technology', 'Energy & Power', 'Semiconductors']
@@ -272,7 +265,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {recentPublications.map((pub, i) => (
+          {recentReports.slice(0, 4).map((pub, i) => (
             <div key={pub.slug}
               className="group relative bg-surface-container-lowest rounded-xl border border-transparent p-5 transition-all duration-300 cursor-pointer overflow-hidden hover:shadow-card-hover hover:border-outline-variant/30 hover:scale-[1.01]">
 
@@ -293,14 +286,12 @@ export default function HomePage() {
               {/* Title */}
               <Link href={`/outlook/${pub.slug}/global`}
                 className="block font-headline font-semibold text-sm leading-snug mb-3 text-primary hover:text-secondary transition-colors line-clamp-2">
-                {pub.title} Market Size &amp; Outlook, 2024–{pub.year}
+                {pub.title} Market Size &amp; Outlook, {pub.yearStart}–{pub.yearEnd}
               </Link>
 
               {/* Stats */}
               <div className="flex items-center gap-3 mb-4 text-xs font-body text-on-surface-variant">
-                <span className="font-semibold text-primary">{pub.revenue}</span>
-                <span className="w-1 h-1 rounded-full bg-outline-variant" />
-                <span>CAGR <strong className="text-secondary">{pub.cagr}</strong></span>
+                <span>CAGR <strong className="text-secondary">{pub.cagr}%</strong></span>
               </div>
 
               {/* Quick Links */}
@@ -309,11 +300,11 @@ export default function HomePage() {
                   className="text-[10px] font-body font-medium text-on-surface-variant hover:text-secondary uppercase tracking-wider transition-colors">
                   Dashboard
                 </Link>
-                <Link href={`/search?type=Statistics&industry=${pub.industryId}`}
+                <Link href={`/search?type=Statistics&industry=${pub.industrySlug}`}
                   className="text-[10px] font-body font-medium text-on-surface-variant hover:text-secondary uppercase tracking-wider transition-colors">
                   Statistics
                 </Link>
-                <Link href={`/search?type=Report&industry=${pub.industryId}`}
+                <Link href={`/search?type=Report&industry=${pub.industrySlug}`}
                   className="text-[10px] font-body font-medium text-on-surface-variant hover:text-secondary uppercase tracking-wider transition-colors">
                   Report
                 </Link>
@@ -413,9 +404,9 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          PRICING PREVIEW
+          PRICING PREVIEW — hidden
       ═══════════════════════════════════════════════════════════ */}
-      <section className="py-16 relative overflow-hidden" style={{ background: '#0d1525' }}>
+      {false && <section className="py-16 relative overflow-hidden" style={{ background: '#0d1525' }}>
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full"
             style={{ background: 'rgba(28,0,72,0.08)', filter: 'blur(80px)' }} />
@@ -454,7 +445,7 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ═══════════════════════════════════════════════════════════
           STATS COUNTER

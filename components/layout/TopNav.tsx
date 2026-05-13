@@ -3,16 +3,23 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, ChevronDown, Bell, User, Settings, LogOut, CreditCard, HelpCircle, BookOpen, Zap } from 'lucide-react'
+import { Search, ChevronDown, Bell, User, Settings, LogOut, CreditCard, HelpCircle, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { mockIndustries as industries } from '@/lib/mock-data'
+import { wpIndustriesAsIndustry } from '@/lib/wp-data/industries'
 import { useUserStore } from '@/store/user-store'
 
+// Skip pure-geographic buckets and tiny long-tail entries — we want browsable
+// industries in the dropdown, not country slugs.
+const GEO_SLUGS = new Set(['country', 'regional', 'india', 'europe'])
+const navIndustries = wpIndustriesAsIndustry
+  .filter(i => !GEO_SLUGS.has(i.id) && (i.marketCount ?? 0) >= 5)
+  .slice(0, 16)
+
 const industryColumns = [
-  industries.slice(0, 6),
-  industries.slice(6, 12),
-  industries.slice(12, 18),
-  industries.slice(18),
+  navIndustries.slice(0, 4),
+  navIndustries.slice(4, 8),
+  navIndustries.slice(8, 12),
+  navIndustries.slice(12, 16),
 ]
 
 const servicesItems = [
@@ -86,7 +93,8 @@ export default function TopNav() {
                   {industryColumns.map((col, ci) => (
                     <div key={ci} className="space-y-1">
                       {col.map(ind => (
-                        <Link key={ind.id} href="/industries"
+                        <Link key={ind.id} href={`/search?industry=${ind.id}`}
+                          onClick={() => setActiveDropdown(null)}
                           className="block text-xs font-inter text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white hover:bg-surface-container-low px-2 py-1 rounded-lg transition-colors">
                           {ind.name}
                         </Link>
@@ -95,18 +103,14 @@ export default function TopNav() {
                   ))}
                 </div>
                 <div className="border-t border-slate-100 dark:border-slate-700 pt-3">
-                  <Link href="/industries" className="text-xs font-inter font-semibold text-secondary hover:text-on-secondary-fixed-variant transition-colors">
+                  <Link href="/industries" onClick={() => setActiveDropdown(null)}
+                    className="text-xs font-inter font-semibold text-secondary hover:text-on-secondary-fixed-variant transition-colors">
                     → View All Reports
                   </Link>
                 </div>
               </div>
             )}
           </div>
-
-          {/* Pricing */}
-          <Link href="/pricing" className="px-3 py-2 rounded-lg text-sm font-manrope font-medium tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-150">
-            Pricing
-          </Link>
 
           {/* Services */}
           <div className="relative"
@@ -124,6 +128,7 @@ export default function TopNav() {
               <div className="absolute top-full right-0 mt-1 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-4 z-50">
                 {servicesItems.map(s => (
                   <Link key={s.href} href={s.href}
+                    onClick={() => setActiveDropdown(null)}
                     className="flex flex-col px-3 py-2.5 rounded-xl hover:bg-surface-container-low dark:hover:bg-slate-700 transition-colors">
                     <span className="text-sm font-inter font-semibold text-primary dark:text-white">{s.label}</span>
                     <span className="text-xs font-inter text-on-surface-variant dark:text-slate-400 mt-0.5">{s.desc}</span>
@@ -136,13 +141,6 @@ export default function TopNav() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 ml-auto shrink-0">
-          {/* Upgrade — primary navy */}
-          <Link href="/pricing"
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-inter font-bold bg-primary text-white transition-all duration-200 hover:opacity-90 active:scale-[0.97]">
-            <Zap className="w-3.5 h-3.5" />
-            Upgrade
-          </Link>
-
           {/* Notifications */}
           <button className="relative p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
             <Bell className="w-4 h-4 text-slate-600 dark:text-slate-300" />

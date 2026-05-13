@@ -1,0 +1,590 @@
+[
+  {
+    "name": "Technology",
+    "slug": "technology",
+    "count": 426,
+    "subIndustries": [
+      "Blockchain Technology",
+      "Agricultural Ventilation",
+      "Litigation Funding Investment",
+      "Mitigation Banking",
+      "Online Gambling and Betting",
+      "Online Voting System",
+      "Open Source Intelligence (OSINT)",
+      "Testing Inspection and Certification TIC",
+      "RegTech",
+      "Sales Tax Software",
+      "Security Robots",
+      "Smart Eyewear Technology"
+    ]
+  },
+  {
+    "name": "Chemicals And Materials",
+    "slug": "chemicals-and-materials",
+    "count": 402,
+    "subIndustries": [
+      "Calcium Carbonate",
+      "Mechanical Face Seals",
+      "Merchant Pig Iron",
+      "Molded Pulp Packaging",
+      "Boron Carbide",
+      "Textile Chemicals",
+      "Bioplastics",
+      "Nanocoatings",
+      "Biocide",
+      "Nano Silica",
+      "Thermoformed Plastics",
+      "Polybutene-1"
+    ]
+  },
+  {
+    "name": "Healthcare",
+    "slug": "healthcare",
+    "count": 382,
+    "subIndustries": [
+      "Cannabis Testing",
+      "Air Ambulance",
+      "Moringa Products",
+      "Human Insulin",
+      "Veterinary Vaccine",
+      "Analytical Standards",
+      "Medical Cannabis (CBD) Packaging",
+      "MRI Contrast Agents",
+      "Electric Wheelchair",
+      "Cardiac Catheters",
+      "Respiratory Diagnostics",
+      "Prescription Lens"
+    ]
+  },
+  {
+    "name": "Consumer Goods",
+    "slug": "consumer-goods",
+    "count": 341,
+    "subIndustries": [
+      "Anti-Aging",
+      "Carpets and Rugs",
+      "Dental Insurance",
+      "Male Grooming Products",
+      "Mosquito Repellent",
+      "Online On-Demand Laundry Service",
+      "US Education",
+      "Lawn and Garden Consumables",
+      "Wet Wipes",
+      "Hearing Aids",
+      "Tobacco Paper",
+      "Spas and Beauty Salons"
+    ]
+  },
+  {
+    "name": "Food & Beverages",
+    "slug": "food-beverages",
+    "count": 219,
+    "subIndustries": [
+      "Cultured Meat",
+      "Pea Protein",
+      "Raisins",
+      "Cannabis Edibles",
+      "Fast Food & Quick Service Restaurant (QSR)",
+      "Ancient and Specialty Grain Flour",
+      "Carotenoids",
+      "Functional Food and Beverage",
+      "A2 Milk",
+      "Peanut Butter",
+      "Apricot",
+      "Plant-based Milk"
+    ]
+  },
+  {
+    "name": "Automotive",
+    "slug": "automotive",
+    "count": 182,
+    "subIndustries": [
+      "Off-highway Electric Vehicle",
+      "Car Care Products",
+      "Vehicle Electrification",
+      "Vehicle Roadside Assistance",
+      "Amphibious Excavators",
+      "Electric Bus",
+      "Smart Electric Drive",
+      "(Bead Wire) Tyre Bead Wire",
+      "Automotive Smart Lighting",
+      "Automotive Electric Vacuum Pump",
+      "Electric Brake Booster",
+      "Electric Bus Charging Station"
+    ]
+  },
+  {
+    "name": "Energy And Power",
+    "slug": "energy-and-power",
+    "count": 141,
+    "subIndustries": [
+      "Zinc-ion Battery",
+      "Renewable Energy",
+      "Energy As a Service",
+      "Solar PV (Photovoltaic) Panels",
+      "Ozone Generation",
+      "Transformer Oil",
+      "Small Wind Power",
+      "Solar Photovoltaic",
+      "Battery Manufacturing Equipment",
+      "Electrical Control Panel",
+      "Electric Traction Motor",
+      "Solar Energy"
+    ]
+  },
+  {
+    "name": "Semiconductors & Electronics",
+    "slug": "semiconductors-electronics",
+    "count": 125,
+    "subIndustries": [
+      "Solid State Transformer",
+      "Soundbar",
+      "Acoustic Wave Sensors",
+      "Refurbished and Used Mobile Phones",
+      "Well Casing",
+      "Electric DC Motors",
+      "IP Intercom",
+      "Smart Access Control",
+      "Electric AC Motors",
+      "Electric Insulator",
+      "Electric Motor",
+      "Electrical Enclosures"
+    ]
+  },
+  {
+    "name": "Industrial Automation And Equipment",
+    "slug": "industrial-automation-and-equipment",
+    "count": 101,
+    "subIndustries": [
+      "Portable Generator",
+      "Lawn Mowers",
+      "Fire Pump",
+      "Gas Leak Detectors",
+      "Water Electrolysis",
+      "Flexible Pipes for Oil and Gas",
+      "Water Sensor",
+      "Diamond Cutting Tool",
+      "Machinery and Industrial Automation",
+      "Europe Pulp and Paper Automation",
+      "North America Pulp and Paper Automation",
+      "US Pulp and Paper Automation"
+    ]
+  },
+  {
+    "name": "Machinery & Equipment",
+    "slug": "machinery-equipment",
+    "count": 67,
+    "subIndustries": [
+      "Agriculture Nets",
+      "Air Compressor",
+      "Air Starters",
+      "Residential Boiler",
+      "Remote Terminal Unit RTU in Smart Grid",
+      "Industrial Air Compressor",
+      "Metrology",
+      "Golf Simulators",
+      "Machine Tools",
+      "Power Tools",
+      "Fire Resistant Hydraulic Fluid",
+      "Cotton Ginning Machine"
+    ]
+  },
+  {
+    "name": "Aerospace & Defense",
+    "slug": "aerospace-defense",
+    "count": 61,
+    "subIndustries": [
+      "Armored Vehicles",
+      "Aircraft Seating",
+      "Electric Aircraft",
+      "Military Transport Aircraft",
+      "Airport Operations",
+      "Commercial Aircraft",
+      "Military Training Aircraft",
+      "Hybrid Electric Aircraft",
+      "US Airport Operations",
+      "Fighter Jet Engine",
+      "Predator Drones",
+      "Foldable Drones"
+    ]
+  },
+  {
+    "name": "Packaging & Transport",
+    "slug": "packaging-transport",
+    "count": 57,
+    "subIndustries": [
+      "Pharmaceutical Glass Ampoules",
+      "ISO Tank Container",
+      "Advanced Chip Packaging",
+      "Pulp, Paper, and Packaging",
+      "Gas Mixers",
+      "Biodegradable Packaging",
+      "Aerosol Cans",
+      "Flexographic Printing",
+      "Reusable Packaging",
+      "5G Chip Packaging",
+      "Advanced Semiconductor Packaging",
+      "Single Use Plastic"
+    ]
+  },
+  {
+    "name": "Country",
+    "slug": "country",
+    "count": 55,
+    "subIndustries": [
+      "U.S. Weight Loss",
+      "US Online Gambling",
+      "US Tour Operators",
+      "US Regenerative Medicine",
+      "US Online Gambling and Betting",
+      "US Veterinary Orthopedic Implants",
+      "US Pediatric Supplement",
+      "US Alginate Dressings",
+      "US Tissue Diagnostics",
+      "US Biofilm Treatment",
+      "US MICE",
+      "India Peritoneal Dialysis"
+    ]
+  },
+  {
+    "name": "Agriculture",
+    "slug": "agriculture",
+    "count": 38,
+    "subIndustries": [
+      "Agricultural Adjuvants",
+      "Agricultural Testing",
+      "Pasture Seeds",
+      "Agricultural Ventilation Fans",
+      "Primary Macronutrients",
+      "Secondary Macronutrients",
+      "Iron Chelates",
+      "Pesticide Residue Detector",
+      "Forest Technological Equipment",
+      "Stinging Nettle Fibers",
+      "Poultry Vitamin",
+      "Silos"
+    ]
+  },
+  {
+    "name": "BFSI & Others",
+    "slug": "bfsi-others",
+    "count": 31,
+    "subIndustries": [
+      "Real Estate Crowdfunding Investment",
+      "Credit Card Payments",
+      "US Private Equity",
+      "US Commercial Banking",
+      "US B2C Payment",
+      "Financial Guarantee",
+      "Mutual Fund Assets",
+      "Trade Finance",
+      "India B2B Payments",
+      "Europe B2B Payments",
+      "US B2B Payments",
+      "Banking as a Service"
+    ]
+  },
+  {
+    "name": "Logistics & Transportation",
+    "slug": "logistics-transportation",
+    "count": 29,
+    "subIndustries": [
+      "Warehousing",
+      "Luxury Car Rental",
+      "Cold Storage",
+      "Automotive Intelligent Park Assist",
+      "Tree Moving Machine",
+      "Railway Construction Technology",
+      "Freight Forwarding",
+      "Cross Deck Boat",
+      "European Car Sharing",
+      "Cash Logistics",
+      "Shipping Container",
+      "Zero-Emissions Shipping"
+    ]
+  },
+  {
+    "name": "Pharmaceuticals",
+    "slug": "pharmaceuticals",
+    "count": 25,
+    "subIndustries": [
+      "Paclitaxel Injection",
+      "Cannabis Concentrate",
+      "Quinine",
+      "Somatostatin Analogs",
+      "Precision Medicine",
+      "(API) Active Pharmaceutical Ingredients",
+      "Generic Drug",
+      "Antimalarial Drugs",
+      "Pharmaceutical Elixir",
+      "Chlorpheniramine Maleate",
+      "Biofilms Treatment",
+      "Pharmaceutical Stability & Storage Services"
+    ]
+  },
+  {
+    "name": "Advanced Materials",
+    "slug": "advanced-materials",
+    "count": 24,
+    "subIndustries": [
+      "Nano Zinc Oxide",
+      "Solar Cullet",
+      "Tighter Recycled Fiber",
+      "US Personal Protective Equipment (PPE)",
+      "Europe Ceramic and Porcelain Tiles",
+      "Wall Panels",
+      "US Polyethylene",
+      "North America Ceramic & Porcelain Tiles",
+      "Residential-Single Family Roofing",
+      "Optical Hybrid Film",
+      "Refiberd Textile",
+      "Novel Smart Textile"
+    ]
+  },
+  {
+    "name": "Medical Devices",
+    "slug": "medical-devices",
+    "count": 22,
+    "subIndustries": [
+      "Cochlear Implants",
+      "Orthopedic Prosthetic",
+      "Ultrasonic Dissection Devices",
+      "Ultrasound Probe Disinfection",
+      "Blood Clot Retrieval Devices",
+      "Vibrating Mesh Nebulizer",
+      "Foot Orthotic Insoles",
+      "Antithrombin",
+      "Blood Glucose Monitoring System",
+      "Cardiac POC Testing",
+      "Medical Devices",
+      "Medical Supplies"
+    ]
+  },
+  {
+    "name": "Hospitality & Tourism",
+    "slug": "hospitality-tourism",
+    "count": 16,
+    "subIndustries": [
+      "MICE",
+      "Tourism Source",
+      "Cruise Tourism",
+      "Playcation Travel",
+      "Energy Positive Hotel Construction",
+      "Outbound MICE",
+      "Mice Model",
+      "Fashion Event",
+      "Conference Tourism",
+      "Tourism",
+      "Sports Tourism",
+      "Europe Camping and Caravanning"
+    ]
+  },
+  {
+    "name": "Water & Sludge Treatment",
+    "slug": "water-sludge-treatment",
+    "count": 14,
+    "subIndustries": [
+      "Alkaline Water Purifier",
+      "Water Treatment Equipment",
+      "Wastewater Treatment System",
+      "Water Quality Sensor",
+      "Waste Gas Treatment",
+      "Plastic Waste Management",
+      "Europe Water Testing and Analysis",
+      "North America Water Testing and Analysis",
+      "US Water Testing and Analysis",
+      "India Water Purifier",
+      "US Water Filtration",
+      "Atmospheric Water Generator"
+    ]
+  },
+  {
+    "name": "Regional",
+    "slug": "regional",
+    "count": 13,
+    "subIndustries": [
+      "North America Online Gambling and Betting",
+      "North America Regenerative Medicine",
+      "North America Veterinary Orthopedic Implants",
+      "North America Alginate Dressings",
+      "North America Tissue Diagnostics",
+      "Saudi Arabia LED Lighting",
+      "Europe Cosmetic Surgery",
+      "Europe Weight Loss",
+      "North America Nanomedicine",
+      "North America Oral Care",
+      "Europe Testosterone Replacement Therapy",
+      "Europe Love Hotels"
+    ]
+  },
+  {
+    "name": "India",
+    "slug": "india",
+    "count": 9,
+    "subIndustries": [
+      "India Online Poker",
+      "India AI in Healthcare",
+      "India Luxury Hotel",
+      "India Pharmaceutical",
+      "India Hospital Furniture",
+      "India Biotechnology",
+      "India Telehealth",
+      "India Respiratory Devices",
+      "India Wound Care Management Device"
+    ]
+  },
+  {
+    "name": "Clinical Diagnostics",
+    "slug": "clinical-diagnostics",
+    "count": 7,
+    "subIndustries": [
+      "Cold Plasma",
+      "Multi Cancer Early Detection",
+      "Laboratory Information Management System (LIMS)",
+      "Tissue Diagnostics",
+      "US Multi Cancer Early Detection",
+      "D-Xylose Test",
+      "Laboratory Informatics"
+    ]
+  },
+  {
+    "name": "Animal Health",
+    "slug": "animal-health",
+    "count": 6,
+    "subIndustries": [
+      "Pet Supplement",
+      "Veterinary Orthopedic Implants",
+      "Animal Healthcare",
+      "US Animal Healthcare",
+      "Europe Animal Healthcare",
+      "Pet Cancer Therapeutics"
+    ]
+  },
+  {
+    "name": "Renewable Energy",
+    "slug": "renewable-energy",
+    "count": 5,
+    "subIndustries": [
+      "Clean Hydrogen",
+      "Solar PV Supply Chain",
+      "Renewable Natural Gas",
+      "Wind Energy",
+      "H2 Green Steel"
+    ]
+  },
+  {
+    "name": "Europe",
+    "slug": "europe",
+    "count": 5,
+    "subIndustries": [
+      "Europe Regenerative Medicine",
+      "Europe Online Gambling and Betting",
+      "Europe Pediatric Supplement",
+      "Europe Alginate Dressings",
+      "Europe Tissue Diagnostics"
+    ]
+  },
+  {
+    "name": "Ice, Electric, Hybrid, Autonomous Vehicles",
+    "slug": "ice-electric-hybrid-autonomous-vehicles",
+    "count": 4,
+    "subIndustries": [
+      "Electric Vehicle (EV)",
+      "Electric School Bus",
+      "Electric Farm Tractor",
+      "Electric and Diesel Tractor"
+    ]
+  },
+  {
+    "name": "Healthcare IT",
+    "slug": "healthcare-it",
+    "count": 4,
+    "subIndustries": [
+      "Healthcare Supply Chain Management",
+      "Lung Cancer Screening Software",
+      "Blockchain-Based Electronic Health Record",
+      "India Augmented Reality in Healthcare"
+    ]
+  },
+  {
+    "name": "Automotive Components",
+    "slug": "automotive-components",
+    "count": 4,
+    "subIndustries": [
+      "Automotive Combination Switch",
+      "Automotive Inhibitor Switch",
+      "Pulp and Paper Automation",
+      "Smart Electric Mobility"
+    ]
+  },
+  {
+    "name": "Beauty & Personal Care",
+    "slug": "beauty-personal-care",
+    "count": 3,
+    "subIndustries": [
+      "Tea Tree Oil",
+      "Hair Extensions",
+      "Europe Sunscreen Ingredients"
+    ]
+  },
+  {
+    "name": "Automotive Technology, Services",
+    "slug": "automotive-technology-services",
+    "count": 3,
+    "subIndustries": [
+      "Flying Cars",
+      "Tire Pressure Monitoring System",
+      "Adaptive Cruise Control"
+    ]
+  },
+  {
+    "name": "Processed & Frozen Foods",
+    "slug": "processed-frozen-foods",
+    "count": 2,
+    "subIndustries": [
+      "Europe Cultured Meat",
+      "Vegan Ice Cream"
+    ]
+  },
+  {
+    "name": "Next Generation Technologies",
+    "slug": "next-generation-technologies",
+    "count": 2,
+    "subIndustries": [
+      "Escape Room",
+      "Remote Workplace Services"
+    ]
+  },
+  {
+    "name": "Specialty & Fine Chemicals",
+    "slug": "specialty-fine-chemicals",
+    "count": 1,
+    "subIndustries": [
+      "Specialty Chemicals"
+    ]
+  },
+  {
+    "name": "Materials",
+    "slug": "materials",
+    "count": 1,
+    "subIndustries": [
+      "India ISO Tank Container"
+    ]
+  },
+  {
+    "name": "Polymers & Plastics",
+    "slug": "polymers-plastics",
+    "count": 1,
+    "subIndustries": [
+      "Glass Panel"
+    ]
+  },
+  {
+    "name": "Specialty Chemicals",
+    "slug": "specialty-chemicals",
+    "count": 1,
+    "subIndustries": [
+      "Pest Control"
+    ]
+  }
+]

@@ -3,9 +3,14 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, X, SlidersHorizontal, BarChart2, FileText, Database, TrendingUp, ChevronDown } from 'lucide-react'
-import { mockMarkets } from '@/lib/mock-data'
-import { mockIndustries } from '@/lib/mock-data'
+import { Search, X, SlidersHorizontal, BarChart2, FileText, Database, TrendingUp, ChevronDown, Calendar, FileType2, Tag } from 'lucide-react'
+import { wpCatalog, wpMarkets as mockMarkets, wpIndustriesAsIndustry as mockIndustries } from '@/lib/wp-data'
+
+const slugToSummary = new Map(wpCatalog.map(r => [r.slug, r]))
+
+function stripHtml(html: string) {
+  return html.replace(/<[^>]*>/g, '').trim()
+}
 
 const resultTypes = [
   { id: 'Report', label: 'Report', icon: FileText },
@@ -114,6 +119,10 @@ function SearchPageInner() {
   if (sortBy === 'cagr') results = [...results].sort((a, b) => b.cagr - a.cagr)
   else if (sortBy === 'az') results = [...results].sort((a, b) => a.title.localeCompare(b.title))
   else if (sortBy === 'newest') results = [...results].sort((a, b) => b.yearEnd - a.yearEnd)
+
+  const RESULT_CAP = 60
+  const totalMatches = results.length
+  const displayResults = results.slice(0, RESULT_CAP)
 
   const baseResults = mockMarkets.filter((m) => {
     if (!query) return true
@@ -372,67 +381,101 @@ function SearchPageInner() {
 
           {results.length > 0 ? (
             <div className="space-y-4">
-              {results.map((result) => (
-                <div key={result.slug}
-                  className="bg-surface-container-lowest rounded-xl p-5 shadow-card hover:shadow-card-hover transition-all duration-300 border border-outline-variant/20 hover:border-secondary/30 group">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/8">
-                      <BarChart2 className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-body font-bold text-white ${
-                          result.type === 'Databook' ? 'bg-tertiary' :
-                          result.type === 'Statistics' ? 'bg-secondary' : 'bg-primary'
-                        }`}>
-                          {result.type}
-                        </span>
-                        {(() => {
-                          const ind = mockIndustries.find(i => i.name.toLowerCase() === result.industry.toLowerCase())
-                          return ind ? (
+              {displayResults.map((result) => {
+                const summary = slugToSummary.get(result.slug)
+                const ind = mockIndustries.find(i => i.name.toLowerCase() === result.industry.toLowerCase())
+                const subDistinct = result.subIndustry && result.subIndustry.toLowerCase() !== result.industry.toLowerCase()
+                  ? result.subIndustry
+                  : null
+                const price = summary?.prices.single
+                return (
+                  <div key={result.slug}
+                    className="bg-surface-container-lowest rounded-xl p-5 shadow-card hover:shadow-card-hover transition-all duration-300 border border-outline-variant/20 hover:border-secondary/30 group">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-primary/8">
+                        <BarChart2 className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-body font-bold text-white bg-primary">
+                            {result.type}
+                          </span>
+                          {ind ? (
                             <Link href={`/search?industry=${ind.id}`}
                               className="text-xs font-body text-on-surface-variant hover:text-secondary transition-colors">
                               {result.industry}
                             </Link>
                           ) : (
                             <span className="text-xs font-body text-on-surface-variant">{result.industry}</span>
-                          )
-                        })()}
-                        <span className="text-outline">·</span>
-                        <span className="text-xs font-body text-on-surface-variant">{result.subIndustry}</span>
-                      </div>
-                      <Link
-                        href={`/outlook/${result.slug}/global`}
-                        className="font-headline font-semibold text-sm leading-snug block mb-2 text-primary hover:text-secondary transition-colors">
-                        Global {result.title} Market Outlook, {result.yearStart}–{result.yearEnd}
-                      </Link>
-                      <p className="text-xs font-body text-on-surface-variant mb-3 line-clamp-2">{result.description}</p>
-                      <div className="flex items-center flex-wrap gap-4 text-xs font-body text-on-surface-variant">
-                        <span>Revenue: <strong className="text-primary">${result.revenue}B</strong></span>
-                        <span>Forecast: <strong className="text-primary">${result.forecast}B</strong></span>
-                        <span className="inline-flex items-center gap-1">
-                          CAGR:
-                          <strong className="inline-flex items-center gap-0.5 text-secondary">
-                            <TrendingUp className="w-3 h-3" />
-                            {result.cagr}%
-                          </strong>
-                        </span>
-                        <span>Segments: <strong className="text-primary">{result.segments.length}</strong></span>
-                      </div>
-                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface-container">
-                        {['Overview', 'Statistics', 'View Full Report'].map((link, i) => (
-                          <Link key={link} href={`/outlook/${result.slug}/global`}
-                            className={`text-xs font-body font-medium transition-colors ${
-                              i === 2 ? 'text-secondary font-semibold hover:text-on-secondary-fixed-variant' : 'text-on-surface-variant hover:text-secondary'
-                            }`}>
-                            {link}
+                          )}
+                          {subDistinct && (
+                            <>
+                              <span className="text-outline">·</span>
+                              <span className="text-xs font-body text-on-surface-variant">{subDistinct}</span>
+                            </>
+                          )}
+                        </div>
+                        <Link
+                          href={`/outlook/${result.slug}/global`}
+                          className="font-headline font-semibold text-sm leading-snug block mb-2 text-primary hover:text-secondary transition-colors">
+                          {result.title}
+                        </Link>
+                        <p className="text-xs font-body text-on-surface-variant mb-3 line-clamp-2">{stripHtml(result.description)}</p>
+                        <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs font-body text-on-surface-variant">
+                          {summary?.pages && (
+                            <span className="inline-flex items-center gap-1">
+                              <FileType2 className="w-3 h-3 text-outline" />
+                              <strong className="text-primary">{summary.pages}</strong> pages
+                            </span>
+                          )}
+                          {summary?.publishedDate && (
+                            <span className="inline-flex items-center gap-1">
+                              <Calendar className="w-3 h-3 text-outline" />
+                              <strong className="text-primary">{summary.publishedDate}</strong>
+                            </span>
+                          )}
+                          {result.cagr > 0 && (
+                            <span className="inline-flex items-center gap-1">
+                              CAGR
+                              <strong className="inline-flex items-center gap-0.5 text-secondary">
+                                <TrendingUp className="w-3 h-3" />
+                                {result.cagr}%
+                              </strong>
+                              {result.yearStart && result.yearEnd && (
+                                <span className="text-on-surface-variant">({result.yearStart}–{result.yearEnd})</span>
+                              )}
+                            </span>
+                          )}
+                          {price && (
+                            <span>From <strong className="text-primary">${price.toLocaleString()}</strong></span>
+                          )}
+                          {result.segments.slice(0, 3).map(s => (
+                            <span key={s} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface-container text-[10px]">
+                              <Tag className="w-2.5 h-2.5 text-outline" />
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-3 mt-3 pt-3 border-t border-surface-container">
+                          <Link href={`/outlook/${result.slug}/global`}
+                            className="text-xs font-body font-medium text-on-surface-variant hover:text-secondary transition-colors">
+                            Overview
                           </Link>
-                        ))}
+                          <Link href={`/outlook/${result.slug}/global`}
+                            className="text-xs font-body font-semibold text-secondary hover:text-on-secondary-fixed-variant transition-colors">
+                            View Full Report →
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
+                )
+              })}
+              {totalMatches > RESULT_CAP && (
+                <div className="text-center py-6 text-xs font-mono uppercase tracking-[0.14em] text-on-surface-variant">
+                  Showing {RESULT_CAP} of {totalMatches.toLocaleString()} matches — refine filters to narrow further.
                 </div>
-              ))}
+              )}
             </div>
           ) : (
             /* Editorial empty state */

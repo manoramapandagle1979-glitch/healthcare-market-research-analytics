@@ -7,8 +7,8 @@ import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/ui-store'
 import {
   Home, BarChart2, Clock, BookOpen, Building2, Settings,
-  CreditCard, ChevronDown, ChevronRight,
-  ChevronLeft, TrendingUp, Contact, ClipboardList,
+  ChevronDown, ChevronRight,
+  ChevronLeft, TrendingUp, Contact,
   LogOut, HelpCircle, Sparkles
 } from 'lucide-react'
 
@@ -19,11 +19,11 @@ const navItems = [
     label: 'Industries',
     href: '/industries',
     children: [
-      { label: 'Biotechnology', href: '/search?industry=biotech' },
-      { label: 'Clinical Diagnostics', href: '/search?industry=clinical-diagnostics' },
+      { label: 'Technology', href: '/search?industry=technology' },
+      { label: 'Healthcare', href: '/search?industry=healthcare' },
+      { label: 'Chemicals & Materials', href: '/search?industry=chemicals-and-materials' },
       { label: 'Consumer Goods', href: '/search?industry=consumer-goods' },
-      { label: 'Pharmaceuticals', href: '/search?industry=pharma' },
-      { label: 'Telecom & Tech', href: '/search?industry=telecom' },
+      { label: 'Food & Beverages', href: '/search?industry=food-beverages' },
       { label: 'Explore All', href: '/industries' },
     ],
   },
@@ -34,10 +34,10 @@ const navItems = [
     label: 'Companies',
     href: '/companies',
     children: [
-      { label: 'Healthcare', href: '/companies' },
-      { label: 'Technology', href: '/companies' },
-      { label: 'Energy', href: '/companies' },
-      { label: 'Financials', href: '/companies' },
+      { label: 'Healthcare', href: '/companies?sector=Healthcare' },
+      { label: 'Technology', href: '/companies?sector=Technology' },
+      { label: 'Energy', href: '/companies?sector=Energy' },
+      { label: 'Financials', href: '/companies?sector=Financial+Services' },
       { label: 'Explore All', href: '/companies' },
     ],
   },
@@ -52,8 +52,6 @@ const navItems = [
       { label: 'Astra', href: '/services/astra' },
     ],
   },
-  { icon: CreditCard, label: 'Pricing', href: '/pricing' },
-  { icon: ClipboardList, label: 'Survey', href: '/survey' },
   { icon: Contact, label: 'Contact Us', href: '/contact' },
 ]
 
@@ -159,11 +157,31 @@ function SidebarInner() {
               </div>
 
               {/* Sub-items */}
-              {hasChildren && isExpanded && !collapsed && (
+              {hasChildren && isExpanded && !collapsed && (() => {
+                // Filter keys used by sibling children — so an unfiltered child
+                // ("Explore All") doesn't light up alongside a filtered sibling.
+                const siblingFilterKeys = new Set<string>()
+                for (const c of item.children!) {
+                  const q = c.href.split('?')[1]
+                  if (q) for (const k of Array.from(new URLSearchParams(q).keys())) siblingFilterKeys.add(k)
+                }
+                return (
                 <div className="ml-9 mt-0.5 space-y-0.5">
                   {item.children!.map((child) => {
-                    const childPath = child.href.split('?')[0]
-                    const childActive = pathname === childPath
+                    const [childPath, childQuery] = child.href.split('?')
+                    let childActive = pathname === childPath
+                    if (childActive) {
+                      if (childQuery) {
+                        const params = new URLSearchParams(childQuery)
+                        for (const [k, v] of Array.from(params.entries())) {
+                          if (searchParams.get(k) !== v) { childActive = false; break }
+                        }
+                      } else {
+                        for (const k of Array.from(siblingFilterKeys)) {
+                          if (searchParams.get(k) !== null) { childActive = false; break }
+                        }
+                      }
+                    }
                     return (
                       <Link
                         key={child.label}
@@ -180,7 +198,8 @@ function SidebarInner() {
                     )
                   })}
                 </div>
-              )}
+                )
+              })()}
             </div>
           )
         })}

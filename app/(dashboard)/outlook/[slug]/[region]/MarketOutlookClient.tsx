@@ -520,9 +520,10 @@ export default function MarketOutlookClient({
                   return (
                     <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
                       <h4 className="font-headline font-semibold text-sm text-primary mb-4">Market Overview</h4>
-                      <p className="text-sm font-body text-on-surface-variant leading-relaxed">
-                        {fallbackDesc.slice(0, 1000)}
-                      </p>
+                      <div
+                        className="text-sm font-body text-on-surface-variant leading-relaxed wp-prose"
+                        dangerouslySetInnerHTML={{ __html: fallbackDesc.slice(0, 1000) }}
+                      />
                     </div>
                   )
                 }

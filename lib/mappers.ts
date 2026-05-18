@@ -6,27 +6,54 @@ import type { Market, MarketDataPoint, MarketCompany, Company, Industry, User } 
  */
 export function mapReportToMarket(report: ApiReport): Market {
   const metrics = report.market_metrics
+
+  // ── Step 1: CAGR — prefer new numeric field, fall back to parsing metrics string ──
+  let cagrValue: number | undefined
+  if (report.cagr != null) {
+    cagrValue = report.cagr
+  } else if (metrics?.cagr != null) {
+    // metrics.cagr is typed as number in MarketMetrics but may come as a string like "57.54%"
+    const raw = String(metrics.cagr).replace('%', '')
+    const parsed = parseFloat(raw)
+    if (!isNaN(parsed)) cagrValue = parsed
+  }
+  const cagr = cagrValue ?? 0
+
+  // ── Revenue / forecast ──
   const revenue = metrics?.currentRevenue ?? 0
   const forecast = metrics?.forecastRevenue ?? 0
-  const cagr = metrics?.cagr ?? 0
-  const yearStart = metrics?.currentYear ?? new Date().getFullYear()
-  const yearEnd = metrics?.forecastYear ?? yearStart + 5
 
-  // Interpolate yearly data points between current and forecast revenue
+  // ── Step 2: Year range — prefer new fields, fall back to metrics ──
+  const yearStart =
+    report.year_start ??
+    metrics?.cagrStartYear ??
+    metrics?.currentYear ??
+    new Date().getFullYear()
+  const yearEnd =
+    report.year_end ??
+    metrics?.cagrEndYear ??
+    metrics?.forecastYear ??
+    yearStart + 5
+
+  // ── Step 3: Chart dataPoints ──
+  // baseValue: parse from market_metrics.currentRevenue if available; else null
+  const baseValue = metrics?.currentRevenue ?? null
   const dataPoints: MarketDataPoint[] = []
-  const years = yearEnd - yearStart
-  if (years > 0 && revenue > 0) {
-    for (let i = 0; i <= years; i++) {
-      const t = i / years
-      // Exponential growth interpolation using CAGR
-      const value = revenue * Math.pow(1 + cagr / 100, i)
-      dataPoints.push({ year: yearStart + i, value: Math.round(value * 100) / 100 })
+  if (baseValue != null && baseValue > 0) {
+    const years = yearEnd - yearStart
+    if (years > 0) {
+      for (let i = 0; i <= years; i++) {
+        // Exponential growth interpolation using CAGR
+        const value = baseValue * Math.pow(1 + cagr / 100, i)
+        dataPoints.push({ year: yearStart + i, value: Math.round(value * 100) / 100 })
+      }
+    } else {
+      dataPoints.push({ year: yearStart, value: baseValue })
     }
-  } else {
-    dataPoints.push({ year: yearStart, value: revenue })
   }
+  // If baseValue is null, dataPoints stays as empty array — do NOT fabricate revenue data
 
-  // Map key players to MarketCompany
+  // ── Step 7 (key players): null-safe — if key_players is null or empty, use [] ──
   const companies: MarketCompany[] = (report.key_players ?? []).map((kp) => ({
     name: kp.name,
     employees: '',
@@ -34,7 +61,7 @@ export function mapReportToMarket(report: ApiReport): Market {
     website: '',
   }))
 
-  // Extract segments from description or use geography
+  // Extract segments from formats
   const segments = report.formats ?? []
 
   // Build highlights from summary
@@ -47,10 +74,31 @@ export function mapReportToMarket(report: ApiReport): Market {
   // Extract related market slugs (empty — populated at page level from category reports)
   const relatedMarkets: string[] = []
 
+  // ── Step 6: Sections ──
+  const tableOfContents = report.sections?.tableOfContents ?? ''
+
+  // ── Step 5: segmentation — report.segmentation takes precedence ──
+  const segmentation = report.segmentation || ''
+
+  // ── Step 5: methodology ──
+  const methodology = report.methodology || ''
+
+  // ── Step 5: excerpt ──
+  const excerpt = report.excerpt || report.description?.slice(0, 300) || ''
+
+  // ── Step 5: industry ──
+  const industry = report.industry || report.category_name || ''
+
+  // ── Step 5: tags ──
+  const tags = report.tags ?? []
+
+  // ── Step 4: prices ──
+  const prices = report.prices
+
   return {
     slug: report.slug,
     title: report.title,
-    industry: report.category_name ?? '',
+    industry,
     subIndustry: '',
     region: report.geography ?? 'Global',
     description: report.description,
@@ -65,6 +113,14 @@ export function mapReportToMarket(report: ApiReport): Market {
     highlights,
     relatedMarkets,
     type: 'Report',
+    // Extended fields
+    cagrValue,
+    prices,
+    segmentation,
+    methodology,
+    excerpt,
+    tags,
+    tableOfContents: tableOfContents || undefined,
   }
 }
 

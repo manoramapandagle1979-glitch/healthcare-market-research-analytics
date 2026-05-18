@@ -32,6 +32,14 @@ export interface Market {
   highlights: string[]
   relatedMarkets: string[]
   type: 'Report' | 'Databook' | 'Statistics'
+  // Extended fields from new API fields
+  cagrValue?: number
+  prices?: { single: number; team: number; enterprise: number; dataPack: number }
+  segmentation?: string
+  methodology?: string
+  excerpt?: string
+  tags?: string[]
+  tableOfContents?: string
 }
 
 export interface Company {

@@ -112,6 +112,24 @@ export interface ApiReport {
   meta_keywords: string[]
   created_at: string
   updated_at: string
+  // Extended fields returned by newer backend versions
+  excerpt?: string
+  industry?: string
+  tags?: string[]
+  code?: string | null
+  study_period?: string
+  base_year?: number | null
+  year_start?: number | null
+  year_end?: number | null
+  cagr?: number | null
+  prices?: {
+    single: number
+    team: number
+    enterprise: number
+    dataPack: number
+  }
+  segmentation?: string
+  methodology?: string
 }
 
 // ── Category ──

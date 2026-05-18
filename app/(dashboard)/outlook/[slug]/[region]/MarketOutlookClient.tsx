@@ -137,7 +137,20 @@ function MarketGrowthChart({ wpFull, marketTitle, cagr, yearStart, yearEnd }: {
   const sizeCurrent = parseMarketUSD(html, String(yearStart))
   const sizeProjected = parseMarketUSD(html, String(yearEnd), 'Projected Market Size in')
   const data = buildMarketGrowthData(baseYear, yearStart, yearEnd, sizeBase, sizeCurrent, sizeProjected, cagr)
-  if (!data.length || !cagr) return null
+  if (!data.length || !cagr) {
+    return (
+      <div className="bg-white rounded-xl border border-outline-variant/20 shadow-card overflow-hidden">
+        <div className="px-5 pt-5 pb-3">
+          <h4 className="font-headline font-semibold text-[13px] text-primary leading-snug">
+            {marketTitle} market size
+          </h4>
+        </div>
+        <div className="flex items-center justify-center h-[280px] text-muted-foreground text-sm text-on-surface-variant font-body">
+          Market size data coming soon
+        </div>
+      </div>
+    )
+  }
   const maxVal = Math.max(...data.map(d => d.size))
   const yTickCount = 5
   const yMax = Math.ceil(maxVal / (yTickCount - 1)) * (yTickCount - 1)
@@ -377,9 +390,9 @@ export default function MarketOutlookClient({
               },
               {
                 label: 'Single License',
-                value: wpSummary?.prices.single ? `$${wpSummary.prices.single.toLocaleString()}` : '—',
+                value: wpSummary?.prices?.single ? `$${wpSummary.prices.single.toLocaleString()}` : '—',
                 suffix: '',
-                hint: wpSummary?.prices.enterprise
+                hint: wpSummary?.prices?.enterprise
                   ? `Enterprise from $${wpSummary.prices.enterprise.toLocaleString()}`
                   : 'Tiered licensing available',
               },
@@ -433,9 +446,9 @@ export default function MarketOutlookClient({
               {/* KPI Cards — only metrics the WP report actually carries */}
               <div className="grid grid-cols-4 gap-4">
                 {[
-                  market.cagr > 0 && {
+                  {
                     label: `CAGR, ${market.yearStart}–${market.yearEnd}`,
-                    value: `${market.cagr}%`,
+                    value: (market.cagr && market.cagr > 0) ? `${market.cagr}%` : 'N/A',
                     icon: TrendingUp,
                     color: '#006a61',
                     bg: 'rgba(0,106,97,0.08)',
@@ -454,7 +467,7 @@ export default function MarketOutlookClient({
                     color: '#1c0048',
                     bg: 'rgba(28,0,72,0.06)',
                   },
-                  wpSummary?.prices.single && {
+                  wpSummary?.prices?.single && {
                     label: 'Single User License',
                     value: `$${wpSummary.prices.single.toLocaleString()}`,
                     icon: BarChart2,
@@ -478,24 +491,42 @@ export default function MarketOutlookClient({
               </div>
 
               {/* Market Highlights — key bullet-point findings */}
-              {wpFull?.description && (() => {
-                const highlights = (wpFull.description.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [])
-                  .map(m => m.replace(/<[^>]+>/g, '').trim())
-                  .filter(Boolean)
-                  .slice(0, 5)
-                return highlights.length > 0 ? (
-                  <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
-                    <h4 className="font-headline font-semibold text-sm text-primary mb-4">Market Highlights</h4>
-                    <ul className="space-y-2.5">
-                      {highlights.map((h, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm font-body text-on-surface-variant leading-relaxed">
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null
+              {(() => {
+                const descHtml = wpFull?.description || ''
+                const highlights = descHtml
+                  ? (descHtml.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [])
+                      .map(m => m.replace(/<[^>]+>/g, '').trim())
+                      .filter(Boolean)
+                      .slice(0, 5)
+                  : []
+                if (highlights.length > 0) {
+                  return (
+                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
+                      <h4 className="font-headline font-semibold text-sm text-primary mb-4">Market Highlights</h4>
+                      <ul className="space-y-2.5">
+                        {highlights.map((h, i) => (
+                          <li key={i} className="flex items-start gap-3 text-sm font-body text-on-surface-variant leading-relaxed">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
+                            {h}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )
+                }
+                // Fallback: show market description (up to 1000 chars)
+                const fallbackDesc = market.description?.trim() || ''
+                if (fallbackDesc) {
+                  return (
+                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
+                      <h4 className="font-headline font-semibold text-sm text-primary mb-4">Market Overview</h4>
+                      <p className="text-sm font-body text-on-surface-variant leading-relaxed">
+                        {fallbackDesc.slice(0, 1000)}
+                      </p>
+                    </div>
+                  )
+                }
+                return null
               })()}
 
               {/* Market Growth Chart */}
@@ -924,44 +955,30 @@ export default function MarketOutlookClient({
         {activeTab === 'scope' && (
           <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 p-6 shadow-card">
             <h3 className="font-headline font-semibold text-base text-primary mb-5">Market Scope &amp; Segmentation</h3>
-            <div className="space-y-5">
-              {[
-                {
-                  title: `${market.title} source type outlook (Revenue, USD Billion, ${market.yearStart}–${market.yearEnd})`,
-                  items: ['Human', 'Humanized', 'Chimeric', 'Murine'],
-                },
-                {
-                  title: `${market.title} production type outlook (Revenue, USD Billion, ${market.yearStart}–${market.yearEnd})`,
-                  items: ['In-vitro Production', 'In-vivo Production', 'Transgenic Production', 'Recombinant Technology'],
-                },
-                {
-                  title: `${market.title} application outlook (Revenue, USD Billion, ${market.yearStart}–${market.yearEnd})`,
-                  items: ['Cancer', 'Autoimmune Disease', 'Infectious Diseases', 'Ophthalmic Diseases', 'Others'],
-                },
-                {
-                  title: `${market.title} end use outlook (Revenue, USD Billion, ${market.yearStart}–${market.yearEnd})`,
-                  items: ['Hospitals', 'Clinics', 'Academic & Research Institutes', 'Contract Research Organizations'],
-                },
-                {
-                  title: `${market.title} regional outlook (Revenue, USD Billion, ${market.yearStart}–${market.yearEnd})`,
-                  items: ['North America (U.S., Canada)', 'Europe (Germany, UK, France, Italy, Spain)', 'Asia Pacific (China, Japan, India, South Korea)', 'Latin America (Brazil, Mexico)', 'MEA (Saudi Arabia, UAE, South Africa)'],
-                },
-              ].map(section => (
-                <div key={section.title}>
-                  <h4 className="font-body text-sm font-semibold text-primary mb-2 pb-2 border-b border-surface-container">
-                    {section.title}
-                  </h4>
-                  <ul className="space-y-1 ml-4">
-                    {section.items.map(item => (
-                      <li key={item} className="flex items-center gap-2 text-sm font-body text-on-surface-variant">
-                        <span className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            {/* Use market.segmentation (HTML) if non-empty, else wpFull segmentation, else tableOfContents, else placeholder */}
+            {(market.segmentation && market.segmentation.trim()) ? (
+              <div
+                className="wp-prose"
+                dangerouslySetInnerHTML={{ __html: market.segmentation }}
+              />
+            ) : (wpFull?.segmentation && wpFull.segmentation.trim()) ? (
+              <div
+                className="wp-prose"
+                dangerouslySetInnerHTML={{ __html: wpFull.segmentation }}
+              />
+            ) : (market.tableOfContents && market.tableOfContents.trim()) ? (
+              <div
+                className="wp-prose"
+                dangerouslySetInnerHTML={{ __html: market.tableOfContents }}
+              />
+            ) : (wpFull?.tableOfContents && wpFull.tableOfContents.trim()) ? (
+              <div
+                className="wp-prose"
+                dangerouslySetInnerHTML={{ __html: wpFull.tableOfContents }}
+              />
+            ) : (
+              <p className="text-sm font-body text-on-surface-variant">Scope data coming soon.</p>
+            )}
           </div>
         )}
 
@@ -977,10 +994,18 @@ export default function MarketOutlookClient({
                   className="wp-prose"
                   dangerouslySetInnerHTML={{ __html: wpFull.keyPlayers }}
                 />
+              ) : (market.companies && market.companies.length > 0) ? (
+                <ul className="space-y-2">
+                  {market.companies.map((c) => (
+                    <li key={c.name} className="text-sm font-body text-on-surface-variant py-1.5 border-b border-surface-container last:border-0">
+                      {c.name}
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <p className="text-sm font-body text-on-surface-variant">
-                  Detailed player profiles for this report are available in the full document.
-                </p>
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <p className="text-sm font-body text-on-surface-variant">Company data not yet available for this market.</p>
+                </div>
               )}
             </div>
             <div className="p-4 border-t border-surface-container">

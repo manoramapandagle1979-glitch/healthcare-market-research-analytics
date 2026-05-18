@@ -56,20 +56,12 @@ export const getReportSummary = (slug: string) => slugToReport.get(slug)
 // Fields the WP data doesn't carry (dataPoints, revenue, forecast, companies,
 // highlights, relatedMarkets) are stubbed; the outlook page already tolerates
 // empty arrays.
-function cleanTitle(t: string) {
-  return t
-    .replace(/^Global\s+/i, '')
-    .replace(/\s+\d{4}\s*[-–]\s*\d{4}\s*$/, '')
-    .replace(/\s+Market\s*$/i, '')
-    .trim()
-}
-
 export function wpToMarket(r: WpReportSummary): Market {
   const yearStart = r.yearStart ?? r.baseYear ?? 2024
   const yearEnd = r.yearEnd ?? yearStart + 6
   return {
     slug: r.slug,
-    title: cleanTitle(r.title) || r.title,
+    title: r.title,
     industry: r.industry,
     subIndustry: r.categories.find((c) => c !== r.industry) || r.industry,
     region: r.regions[0] || 'Global',

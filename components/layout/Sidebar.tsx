@@ -9,7 +9,7 @@ import {
   Home, BarChart2, Clock, BookOpen, Building2, Settings,
   ChevronDown, ChevronRight,
   ChevronLeft, TrendingUp, Contact,
-  LogOut, HelpCircle, Sparkles
+  LogOut, HelpCircle, Sparkles, Newspaper
 } from 'lucide-react'
 
 const navItems = [
@@ -29,6 +29,7 @@ const navItems = [
   },
   { icon: Clock, label: 'Recent Visited', href: '/my-reports?tab=recent' },
   { icon: BookOpen, label: 'My Reports', href: '/my-reports' },
+  { icon: Newspaper, label: 'Blogs', href: '/blogs' },
   {
     icon: Building2,
     label: 'Companies',

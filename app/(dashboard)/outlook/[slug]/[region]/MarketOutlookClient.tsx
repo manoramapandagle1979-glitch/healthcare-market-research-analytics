@@ -336,9 +336,7 @@ export default function MarketOutlookClient({
               </div>
 
               <h1 className="font-display text-[3rem] leading-[1.02] tracking-[-0.035em] text-white mb-5 max-w-3xl" style={{ fontWeight: 600 }}>
-                Global {market.title}{' '}
-                <span className="font-display-italic text-[#eadfc6]" style={{ fontWeight: 500 }}>market size</span>{' '}
-                &amp; outlook.
+                Global {market.title}{' '} market size &amp; outlook.
               </h1>
 
               <p className="font-body text-[15px] max-w-2xl leading-[1.65]" style={{ color: 'rgba(255,255,255,0.88)' }}

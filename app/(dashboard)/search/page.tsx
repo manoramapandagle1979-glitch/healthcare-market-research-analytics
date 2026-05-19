@@ -3,20 +3,17 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search, X, SlidersHorizontal, BarChart2, FileText, Database, TrendingUp, ChevronDown, Calendar, FileType2, Tag } from 'lucide-react'
-import { wpCatalog, wpMarkets as mockMarkets, wpIndustriesAsIndustry as mockIndustries } from '@/lib/wp-data'
-
-const slugToSummary = new Map(wpCatalog.map(r => [r.slug, r]))
+import {
+  Search, X, SlidersHorizontal, BarChart2, TrendingUp,
+  ChevronDown, Calendar, FileType2, Tag,
+} from 'lucide-react'
+import { getReports } from '@/lib/api/reports'
+import { getCategories } from '@/lib/api/categories'
+import type { ApiReport, ApiCategory } from '@/types/api'
 
 function stripHtml(html: string) {
   return html.replace(/<[^>]*>/g, '').trim()
 }
-
-const resultTypes = [
-  { id: 'Report', label: 'Report', icon: FileText },
-  { id: 'Databook', label: 'Databook', icon: Database },
-  { id: 'Statistics', label: 'Statistics', icon: BarChart2 },
-]
 
 const sortOptions = [
   { value: 'relevant', label: 'Most Relevant' },
@@ -25,30 +22,90 @@ const sortOptions = [
   { value: 'az', label: 'A–Z' },
 ]
 
+function getReportCagr(r: ApiReport): number {
+  if (r.cagr != null) return r.cagr
+  const raw = String(r.market_metrics?.cagr ?? '').replace('%', '')
+  const parsed = parseFloat(raw)
+  return isNaN(parsed) ? 0 : parsed
+}
+
 function SearchPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [inputValue, setInputValue] = useState(searchParams.get('q') || '')
   const [query, setQuery] = useState(searchParams.get('q') || '')
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(
-    searchParams.get('type') ? searchParams.get('type')!.split(',') : []
-  )
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>(
-    searchParams.get('industry') ? searchParams.get('industry')!.split(',') : []
-  )
-  const [showMoreIndustries, setShowMoreIndustries] = useState(false)
+  const [selectedIndustry, setSelectedIndustry] = useState(searchParams.get('industry') || '')
   const [sortBy, setSortBy] = useState<'relevant' | 'newest' | 'cagr' | 'az'>(
     (searchParams.get('sort') as 'relevant' | 'cagr' | 'az' | 'newest') || 'relevant'
   )
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const [results, setResults] = useState<ApiReport[]>([])
+  const [categories, setCategories] = useState<ApiCategory[]>([])
+  const [total, setTotal] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Sync state when URL changes externally (e.g. sidebar navigation)
   useEffect(() => {
-    const timer = setTimeout(() => setQuery(inputValue), 300)
+    const urlIndustry = searchParams.get('industry') || ''
+    if (urlIndustry !== selectedIndustry) setSelectedIndustry(urlIndustry)
+    const urlQuery = searchParams.get('q') || ''
+    if (urlQuery !== query) { setQuery(urlQuery); setInputValue(urlQuery) }
+    const urlSort = (searchParams.get('sort') as typeof sortBy) || 'relevant'
+    if (urlSort !== sortBy) setSortBy(urlSort)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
+
+  // Load categories for sidebar filter on mount
+  useEffect(() => {
+    getCategories(1, 100)
+      .then(({ categories }) => setCategories(categories.filter(c => c.is_active)))
+      .catch(() => {})
+  }, [])
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(inputValue), 400)
     return () => clearTimeout(timer)
   }, [inputValue])
 
-  // Keyboard: "/" or ⌘K focuses the search input
+  // Sync URL params
+  const syncURL = useCallback(() => {
+    const params = new URLSearchParams()
+    if (query) params.set('q', query)
+    if (selectedIndustry) params.set('industry', selectedIndustry)
+    if (sortBy !== 'relevant') params.set('sort', sortBy)
+    const qs = params.toString()
+    router.replace(`/search${qs ? `?${qs}` : ''}`, { scroll: false })
+  }, [query, selectedIndustry, sortBy, router])
+
+  useEffect(() => { syncURL() }, [syncURL])
+
+  // Fetch reports from real API whenever filters change
+  useEffect(() => {
+    setIsLoading(true)
+    getReports({
+      category: selectedIndustry || undefined,
+      search: query || undefined,
+      page: 1,
+      limit: 60,
+    }).then(({ reports, meta }) => {
+      let sorted = [...reports]
+      if (sortBy === 'cagr') sorted.sort((a, b) => getReportCagr(b) - getReportCagr(a))
+      else if (sortBy === 'az') sorted.sort((a, b) => a.title.localeCompare(b.title))
+      else if (sortBy === 'newest') sorted.sort((a, b) =>
+        new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime()
+      )
+      setResults(sorted)
+      setTotal(meta?.total ?? reports.length)
+    }).catch(() => {
+      setResults([])
+      setTotal(0)
+    }).finally(() => setIsLoading(false))
+  }, [query, selectedIndustry, sortBy])
+
+  // "/" or ⌘K focuses search input
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const isTyping = ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)
@@ -62,84 +119,16 @@ function SearchPageInner() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const syncURL = useCallback(() => {
-    const params = new URLSearchParams()
-    if (query) params.set('q', query)
-    if (selectedTypes.length) params.set('type', selectedTypes.join(','))
-    if (selectedIndustries.length) params.set('industry', selectedIndustries.join(','))
-    if (sortBy !== 'relevant') params.set('sort', sortBy)
-    const qs = params.toString()
-    router.replace(`/search${qs ? `?${qs}` : ''}`, { scroll: false })
-  }, [query, selectedTypes, selectedIndustries, sortBy, router])
-
-  useEffect(() => {
-    syncURL()
-  }, [syncURL])
-
-  const toggleFilter = (arr: string[], setArr: (v: string[]) => void, value: string) => {
-    setArr(arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value])
-  }
-
   const clearAll = () => {
-    setSelectedTypes([])
-    setSelectedIndustries([])
+    setSelectedIndustry('')
     setQuery('')
     setInputValue('')
     setSortBy('relevant')
   }
 
-  const hasFilters = selectedTypes.length > 0 || selectedIndustries.length > 0 || query !== ''
-
-  let results = mockMarkets.map((m) => ({ ...m }))
-
-  if (query) {
-    const q = query.toLowerCase()
-    results = results.filter(
-      (r) =>
-        r.title.toLowerCase().includes(q) ||
-        r.industry.toLowerCase().includes(q) ||
-        r.subIndustry.toLowerCase().includes(q) ||
-        r.description.toLowerCase().includes(q)
-    )
-  }
-
-  if (selectedTypes.length > 0) {
-    results = results.filter((r) => selectedTypes.includes(r.type))
-  }
-
-  if (selectedIndustries.length > 0) {
-    results = results.filter((r) =>
-      selectedIndustries.some((id) => {
-        const ind = mockIndustries.find((i) => i.id === id)
-        return ind && r.industry.toLowerCase() === ind.name.toLowerCase()
-      })
-    )
-  }
-
-  if (sortBy === 'cagr') results = [...results].sort((a, b) => b.cagr - a.cagr)
-  else if (sortBy === 'az') results = [...results].sort((a, b) => a.title.localeCompare(b.title))
-  else if (sortBy === 'newest') results = [...results].sort((a, b) => b.yearEnd - a.yearEnd)
-
+  const hasFilters = !!selectedIndustry || query !== ''
+  const activeCategory = categories.find(c => c.slug === selectedIndustry)
   const RESULT_CAP = 60
-  const totalMatches = results.length
-  const displayResults = results.slice(0, RESULT_CAP)
-
-  const baseResults = mockMarkets.filter((m) => {
-    if (!query) return true
-    const q = query.toLowerCase()
-    return m.title.toLowerCase().includes(q) || m.industry.toLowerCase().includes(q)
-  })
-  const typeCounts = resultTypes.map((t) => ({
-    ...t,
-    count: baseResults.filter((r) => r.type === t.id).length,
-  }))
-
-  const industryCounts = mockIndustries.map((ind) => ({
-    ...ind,
-    count: baseResults.filter((r) =>
-      r.industry.toLowerCase() === ind.name.toLowerCase()
-    ).length,
-  })).filter((i) => i.count > 0)
 
   return (
     <div className="min-h-screen bg-paper page-content">
@@ -157,8 +146,14 @@ function SearchPageInner() {
               Search / Curator Intelligence
             </span>
             <span className="tabular-nums text-[11px] font-mono uppercase tracking-[0.14em] text-white/40">
-              <span className="text-[#6fd6ce] font-semibold">{results.length.toString().padStart(3, '0')}</span>
-              {' / '}{mockMarkets.length.toString().padStart(3, '0')} matches
+              {isLoading ? (
+                <span className="text-white/30 animate-pulse">Loading…</span>
+              ) : (
+                <>
+                  <span className="text-[#6fd6ce] font-semibold">{results.length.toString().padStart(3, '0')}</span>
+                  {' / '}{total.toLocaleString()} results
+                </>
+              )}
             </span>
           </div>
 
@@ -190,62 +185,44 @@ function SearchPageInner() {
             <div className="absolute left-9 bottom-0 right-0 h-px bg-gradient-to-r from-white/25 via-white/10 to-transparent" />
           </div>
 
-          {/* Type segmented + sort + active filter chips */}
-          <div className="flex items-center gap-3 mt-5 flex-wrap">
-            <div className="flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/10">
-              {[{ id: '', label: 'All', icon: Search }, ...resultTypes].map(t => {
-                const Icon = t.icon
-                const active = t.id === '' ? selectedTypes.length === 0 : selectedTypes.length === 1 && selectedTypes[0] === t.id
-                return (
+          {/* Active category chip + reset */}
+          {hasFilters && (
+            <div className="flex items-center gap-3 mt-5 flex-wrap">
+              {activeCategory && (
+                <span className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full text-xs bg-signal/15 text-[#6fd6ce] border border-signal/30">
+                  {activeCategory.name}
                   <button
-                    key={t.id || 'all'}
-                    onClick={() => setSelectedTypes(t.id ? [t.id] : [])}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      active ? 'bg-white text-[#0b1220]' : 'text-white/60 hover:text-white'
-                    }`}
-                    style={active ? { color: '#0b1220' } : undefined}
-                  >
-                    <Icon className="w-3 h-3" />
-                    {t.label}
+                    onClick={() => setSelectedIndustry('')}
+                    className="w-4 h-4 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+                    aria-label={`Remove ${activeCategory.name}`}>
+                    <X className="w-2.5 h-2.5" />
                   </button>
-                )
-              })}
-            </div>
-
-            {/* Active filter chips inline */}
-            {selectedIndustries.length > 0 && (
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {selectedIndustries.map(id => {
-                  const ind = mockIndustries.find(i => i.id === id)
-                  if (!ind) return null
-                  return (
-                    <span key={id} className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full text-xs bg-signal/15 text-[#6fd6ce] border border-signal/30">
-                      {ind.name}
-                      <button
-                        onClick={() => toggleFilter(selectedIndustries, setSelectedIndustries, id)}
-                        className="w-4 h-4 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
-                        aria-label={`Remove ${ind.name}`}>
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                    </span>
-                  )
-                })}
-              </div>
-            )}
-
-            {hasFilters && (
+                </span>
+              )}
+              {/* Show raw slug chip if category not yet loaded */}
+              {selectedIndustry && !activeCategory && (
+                <span className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full text-xs bg-signal/15 text-[#6fd6ce] border border-signal/30">
+                  {selectedIndustry}
+                  <button
+                    onClick={() => setSelectedIndustry('')}
+                    className="w-4 h-4 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+                    aria-label="Remove filter">
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </span>
+              )}
               <button onClick={clearAll} className="text-[11px] font-mono uppercase tracking-[0.12em] text-white/45 hover:text-white transition-colors ml-auto">
                 Reset all ×
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
-        {/* Left Filter Panel — sticky */}
+        {/* ─── Left Filter Panel ─── */}
         <aside className="w-64 shrink-0">
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card p-5">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/20 shadow-card p-5 sticky top-20">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-primary" />
@@ -258,112 +235,96 @@ function SearchPageInner() {
               )}
             </div>
 
-            {/* TYPE */}
-            <div className="mb-6">
-              <h4 className="font-headline font-semibold text-xs uppercase tracking-widest text-on-surface-variant mb-3">TYPE</h4>
-              <div className="space-y-2">
-                {typeCounts.map((type) => {
-                  const Icon = type.icon
-                  const checked = selectedTypes.includes(type.id)
-                  return (
-                    <label key={type.id} className="flex items-center gap-2.5 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleFilter(selectedTypes, setSelectedTypes, type.id)}
-                        className="w-4 h-4 rounded cursor-pointer"
-                        style={{ accentColor: '#006a61' }}
-                      />
-                      <Icon className="w-3.5 h-3.5 text-outline" />
-                      <span className="text-sm font-body text-on-surface-variant group-hover:text-primary transition-colors flex-1">
-                        {type.label}
-                      </span>
-                      <span className="text-xs font-body text-on-surface-variant">{type.count}</span>
-                    </label>
-                  )
-                })}
-              </div>
-            </div>
-
             {/* INDUSTRY */}
-            <div className="mb-6">
+            <div>
               <h4 className="font-headline font-semibold text-xs uppercase tracking-widest text-on-surface-variant mb-3">INDUSTRY</h4>
-              <div className="space-y-2">
-                {industryCounts.slice(0, showMoreIndustries ? undefined : 8).map((ind) => {
-                  const checked = selectedIndustries.includes(ind.id)
-                  return (
-                    <label key={ind.id} className="flex items-center gap-2.5 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleFilter(selectedIndustries, setSelectedIndustries, ind.id)}
-                        className="w-4 h-4 rounded cursor-pointer"
-                        style={{ accentColor: '#006a61' }}
-                      />
-                      <span className="text-sm font-body text-on-surface-variant group-hover:text-primary transition-colors flex-1 truncate">
-                        {ind.name}
-                      </span>
-                      <span className="text-xs font-body text-on-surface-variant shrink-0">{ind.count}</span>
-                    </label>
-                  )
-                })}
-                {!showMoreIndustries && industryCounts.length > 8 && (
-                  <button
-                    onClick={() => setShowMoreIndustries(true)}
-                    className="text-xs font-body font-medium text-secondary hover:text-on-secondary-fixed-variant transition-colors flex items-center gap-1">
-                    <ChevronDown className="w-3 h-3" />
-                    {industryCounts.length - 8} more
-                  </button>
-                )}
-                {showMoreIndustries && (
-                  <button
-                    onClick={() => setShowMoreIndustries(false)}
-                    className="text-xs font-body font-medium text-on-surface-variant hover:text-on-surface transition-colors">
-                    Show less
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Active Filters */}
-            {(selectedTypes.length > 0 || selectedIndustries.length > 0) && (
-              <div>
-                <h4 className="font-headline font-semibold text-xs uppercase tracking-widest text-on-surface-variant mb-2">ACTIVE FILTERS</h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedTypes.map((t) => (
-                    <span key={t} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-body font-medium text-secondary bg-secondary-container/20">
-                      {t}
-                      <button onClick={() => toggleFilter(selectedTypes, setSelectedTypes, t)}>
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                    </span>
+              {categories.length === 0 ? (
+                <div className="space-y-2">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-5 rounded bg-surface-container animate-pulse" />
                   ))}
-                  {selectedIndustries.map((id) => {
-                    const ind = mockIndustries.find((i) => i.id === id)
-                    return ind ? (
-                      <span key={id} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-body font-medium text-tertiary-container bg-tertiary-container/10">
-                        {ind.name.split(' ')[0]}
-                        <button onClick={() => toggleFilter(selectedIndustries, setSelectedIndustries, id)}>
-                          <X className="w-2.5 h-2.5" />
-                        </button>
-                      </span>
-                    ) : null
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[calc(100vh-28rem)] overflow-y-auto pr-1">
+                  {categories.map((cat) => {
+                    const checked = selectedIndustry === cat.slug
+                    return (
+                      <label key={cat.slug} className="flex items-center gap-2.5 cursor-pointer group">
+                        <input
+                          type="radio"
+                          name="industry"
+                          checked={checked}
+                          onChange={() => setSelectedIndustry(cat.slug)}
+                          onClick={() => { if (checked) setSelectedIndustry('') }}
+                          className="w-4 h-4 cursor-pointer"
+                          style={{ accentColor: '#006a61' }}
+                        />
+                        <span className={`text-sm font-body transition-colors flex-1 truncate group-hover:text-primary ${checked ? 'text-primary font-semibold' : 'text-on-surface-variant'}`}>
+                          {cat.name}
+                        </span>
+                      </label>
+                    )
                   })}
                 </div>
+              )}
+            </div>
+
+            {/* Explore Category CTA — shown when category is active */}
+            {activeCategory && (
+              <div className="mt-5 pt-5 border-t border-outline-variant/20">
+                <p className="text-[10px] font-mono uppercase tracking-[0.14em] text-on-surface-variant mb-2">Browsing</p>
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-secondary/8 border border-secondary/15">
+                  <BarChart2 className="w-3.5 h-3.5 text-secondary shrink-0" />
+                  <span className="text-xs font-body font-semibold text-secondary truncate">{activeCategory.name}</span>
+                </div>
+                <Link
+                  href="/industries"
+                  className="mt-2 flex items-center gap-1 text-[11px] font-body text-on-surface-variant hover:text-secondary transition-colors"
+                >
+                  ← All industries
+                </Link>
               </div>
             )}
           </div>
         </aside>
 
-        {/* Results Panel */}
+        {/* ─── Results Panel ─── */}
         <main className="flex-1 min-w-0">
+          {/* Category explore header */}
+          {activeCategory && (
+            <div className="mb-5 pb-4 border-b border-outline-variant/20">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-signal mb-1 block">Industry</span>
+                  <h2 className="font-headline font-bold text-xl text-primary leading-tight">{activeCategory.name}</h2>
+                  {activeCategory.description && (
+                    <p className="text-xs font-body text-on-surface-variant mt-1 max-w-xl">{activeCategory.description}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setSelectedIndustry('')}
+                  className="flex items-center gap-1.5 text-xs font-body text-on-surface-variant hover:text-primary transition-colors shrink-0 mt-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-5">
             <div>
-              <span className="font-headline font-semibold text-lg text-primary">
-                {results.length} Results
-              </span>
-              {query && (
-                <span className="font-body text-sm text-on-surface-variant ml-2">for &ldquo;{query}&rdquo;</span>
+              {isLoading ? (
+                <span className="font-headline font-semibold text-lg text-on-surface-variant">Loading…</span>
+              ) : (
+                <span className="font-headline font-semibold text-lg text-primary">
+                  {results.length < total
+                    ? `${results.length} of ${total.toLocaleString()}`
+                    : results.length} Results
+                  {query && (
+                    <span className="font-body text-sm text-on-surface-variant ml-2">for &ldquo;{query}&rdquo;</span>
+                  )}
+                </span>
               )}
             </div>
             <div className="relative">
@@ -379,15 +340,25 @@ function SearchPageInner() {
             </div>
           </div>
 
-          {results.length > 0 ? (
+          {/* Loading skeletons */}
+          {isLoading && (
             <div className="space-y-4">
-              {displayResults.map((result) => {
-                const summary = slugToSummary.get(result.slug)
-                const ind = mockIndustries.find(i => i.name.toLowerCase() === result.industry.toLowerCase())
-                const subDistinct = result.subIndustry && result.subIndustry.toLowerCase() !== result.industry.toLowerCase()
-                  ? result.subIndustry
-                  : null
-                const price = summary?.prices.single
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-32 rounded-xl bg-surface-container animate-pulse" />
+              ))}
+            </div>
+          )}
+
+          {/* Results */}
+          {!isLoading && results.length > 0 && (
+            <div className="space-y-4">
+              {results.slice(0, RESULT_CAP).map((result) => {
+                const cagr = getReportCagr(result)
+                const yearStart = result.year_start ?? result.market_metrics?.cagrStartYear ?? result.market_metrics?.currentYear
+                const yearEnd = result.year_end ?? result.market_metrics?.cagrEndYear ?? result.market_metrics?.forecastYear
+                const price = result.prices?.single ?? result.discounted_price ?? result.price
+                const tags = (result.meta_keywords ?? result.tags ?? []).slice(0, 3)
+
                 return (
                   <div key={result.slug}
                     className="bg-surface-container-lowest rounded-xl p-5 shadow-card hover:shadow-card-hover transition-all duration-300 border border-outline-variant/20 hover:border-secondary/30 group">
@@ -398,21 +369,16 @@ function SearchPageInner() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-body font-bold text-white bg-primary">
-                            {result.type}
+                            Report
                           </span>
-                          {ind ? (
-                            <Link href={`/search?industry=${ind.id}`}
+                          {result.category_slug ? (
+                            <button
+                              onClick={() => setSelectedIndustry(result.category_slug!)}
                               className="text-xs font-body text-on-surface-variant hover:text-secondary transition-colors">
-                              {result.industry}
-                            </Link>
+                              {result.category_name}
+                            </button>
                           ) : (
-                            <span className="text-xs font-body text-on-surface-variant">{result.industry}</span>
-                          )}
-                          {subDistinct && (
-                            <>
-                              <span className="text-outline">·</span>
-                              <span className="text-xs font-body text-on-surface-variant">{subDistinct}</span>
-                            </>
+                            <span className="text-xs font-body text-on-surface-variant">{result.category_name}</span>
                           )}
                         </div>
                         <Link
@@ -420,36 +386,38 @@ function SearchPageInner() {
                           className="font-headline font-semibold text-sm leading-snug block mb-2 text-primary hover:text-secondary transition-colors">
                           {result.title}
                         </Link>
-                        <p className="text-xs font-body text-on-surface-variant mb-3 line-clamp-2">{stripHtml(result.description)}</p>
+                        <p className="text-xs font-body text-on-surface-variant mb-3 line-clamp-2">
+                          {stripHtml(result.excerpt || result.description || '')}
+                        </p>
                         <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs font-body text-on-surface-variant">
-                          {summary?.pages && (
+                          {result.page_count > 0 && (
                             <span className="inline-flex items-center gap-1">
                               <FileType2 className="w-3 h-3 text-outline" />
-                              <strong className="text-primary">{summary.pages}</strong> pages
+                              <strong className="text-primary">{result.page_count}</strong> pages
                             </span>
                           )}
-                          {summary?.publishedDate && (
+                          {result.publish_date && (
                             <span className="inline-flex items-center gap-1">
                               <Calendar className="w-3 h-3 text-outline" />
-                              <strong className="text-primary">{summary.publishedDate}</strong>
+                              <strong className="text-primary">{result.publish_date.slice(0, 10)}</strong>
                             </span>
                           )}
-                          {result.cagr > 0 && (
+                          {cagr > 0 && (
                             <span className="inline-flex items-center gap-1">
                               CAGR
                               <strong className="inline-flex items-center gap-0.5 text-secondary">
                                 <TrendingUp className="w-3 h-3" />
-                                {result.cagr}%
+                                {cagr}%
                               </strong>
-                              {result.yearStart && result.yearEnd && (
-                                <span className="text-on-surface-variant">({result.yearStart}–{result.yearEnd})</span>
+                              {yearStart && yearEnd && (
+                                <span className="text-on-surface-variant">({yearStart}–{yearEnd})</span>
                               )}
                             </span>
                           )}
-                          {price && (
+                          {price > 0 && (
                             <span>From <strong className="text-primary">${price.toLocaleString()}</strong></span>
                           )}
-                          {result.segments.slice(0, 3).map(s => (
+                          {tags.map(s => (
                             <span key={s} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface-container text-[10px]">
                               <Tag className="w-2.5 h-2.5 text-outline" />
                               {s}
@@ -471,14 +439,16 @@ function SearchPageInner() {
                   </div>
                 )
               })}
-              {totalMatches > RESULT_CAP && (
+              {total > RESULT_CAP && (
                 <div className="text-center py-6 text-xs font-mono uppercase tracking-[0.14em] text-on-surface-variant">
-                  Showing {RESULT_CAP} of {totalMatches.toLocaleString()} matches — refine filters to narrow further.
+                  Showing {RESULT_CAP} of {total.toLocaleString()} reports — refine filters to narrow further.
                 </div>
               )}
             </div>
-          ) : (
-            /* Editorial empty state */
+          )}
+
+          {/* Empty state */}
+          {!isLoading && results.length === 0 && (
             <div className="relative overflow-hidden rounded-2xl border border-[color:var(--border-light)] bg-white py-16 px-8">
               <div aria-hidden className="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-40 blur-3xl"
                    style={{ background: 'radial-gradient(circle, var(--signal-soft) 0%, transparent 70%)' }} />
@@ -492,7 +462,7 @@ function SearchPageInner() {
                 </h3>
                 <p className="text-sm text-ink-muted leading-relaxed mb-6">
                   {query
-                    ? <>No markets matched <strong className="text-ink">&ldquo;{query}&rdquo;</strong>. Try broader terms, or browse by industry below.</>
+                    ? <>No reports matched <strong className="text-ink">&ldquo;{query}&rdquo;</strong>. Try broader terms, or browse by industry below.</>
                     : <>Adjust your filters — the intersection you chose has no coverage in our current databook.</>
                   }
                 </p>
@@ -500,8 +470,6 @@ function SearchPageInner() {
                   <button onClick={clearAll} className="btn-accent text-xs px-4 py-2">Reset search</button>
                   <Link href="/industries" className="btn-outline text-xs px-4 py-2">Browse industries</Link>
                 </div>
-
-                {/* Suggested queries */}
                 <div className="mt-8 pt-6 border-t border-[color:var(--border-subtle)]">
                   <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-ink-muted mb-3">Try instead</div>
                   <div className="flex flex-wrap gap-2">

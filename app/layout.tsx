@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Providers from '@/components/Providers'
 
 export const metadata: Metadata = {
   title: 'Curator Intelligence — Market Research & Analytics Portal',
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-body antialiased bg-paper text-ink">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

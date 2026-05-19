@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/ui-store'
+import { getCategories } from '@/lib/api/categories'
 import {
   Home, BarChart2, Clock, BookOpen, Building2, Settings,
   ChevronDown, ChevronRight,
@@ -12,20 +13,14 @@ import {
   LogOut, HelpCircle, Sparkles, Newspaper
 } from 'lucide-react'
 
-const navItems = [
+const staticNavItems = [
   { icon: Home, label: 'Home', href: '/' },
   {
     icon: BarChart2,
     label: 'Industries',
     href: '/industries',
-    children: [
-      { label: 'Technology', href: '/search?industry=technology' },
-      { label: 'Healthcare', href: '/search?industry=healthcare' },
-      { label: 'Chemicals & Materials', href: '/search?industry=chemicals-and-materials' },
-      { label: 'Consumer Goods', href: '/search?industry=consumer-goods' },
-      { label: 'Food & Beverages', href: '/search?industry=food-beverages' },
-      { label: 'Explore All', href: '/industries' },
-    ],
+    // children injected dynamically from API in SidebarInner
+    children: [] as { label: string; href: string }[],
   },
   { icon: Clock, label: 'Recent Visited', href: '/my-reports?tab=recent' },
   { icon: BookOpen, label: 'My Reports', href: '/my-reports' },
@@ -59,8 +54,35 @@ const navItems = [
 function SidebarInner() {
   const { sidebarCollapsed: collapsed, toggleSidebar } = useUIStore()
   const [expandedItems, setExpandedItems] = useState<string[]>(['Industries'])
+  const [industryChildren, setIndustryChildren] = useState<{ label: string; href: string }[]>([
+    { label: 'Technology', href: '/search?industry=technology' },
+    { label: 'Healthcare', href: '/search?industry=healthcare' },
+    { label: 'Chemicals & Materials', href: '/search?industry=chemicals-and-materials' },
+    { label: 'Consumer Goods', href: '/search?industry=consumer-goods' },
+    { label: 'Food & Beverages', href: '/search?industry=food-beverages' },
+    { label: 'Explore All', href: '/industries' },
+  ])
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  // Load real API categories for the Industries nav section
+  useEffect(() => {
+    getCategories(1, 50)
+      .then(({ categories }) => {
+        const active = categories.filter(c => c.is_active).slice(0, 7)
+        if (active.length === 0) return
+        setIndustryChildren([
+          ...active.map(c => ({ label: c.name, href: `/search?industry=${c.slug}` })),
+          { label: 'Explore All', href: '/industries' },
+        ])
+      })
+      .catch(() => {})
+  }, [])
+
+  // Inject dynamic industry children into nav items
+  const navItems = staticNavItems.map(item =>
+    item.label === 'Industries' ? { ...item, children: industryChildren } : item
+  )
 
   const toggleExpand = (label: string) => {
     setExpandedItems(prev =>

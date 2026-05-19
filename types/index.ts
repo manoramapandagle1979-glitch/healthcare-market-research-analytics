@@ -67,6 +67,7 @@ export interface SubIndustry {
 
 export interface Industry {
   id: string
+  slug: string
   name: string
   subIndustries: string[]
   marketCount?: number

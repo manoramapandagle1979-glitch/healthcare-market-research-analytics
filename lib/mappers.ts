@@ -140,7 +140,8 @@ export function mapCategoryToIndustry(category: ApiCategory, reports: ApiReport[
 
   return {
     id: String(category.id),
-    name: category.name,
+    slug: category.slug,
+    name: category.name.trim(),
     subIndustries: Array.from(subIndustries).slice(0, 20),
     marketCount: category.report_count ?? reports.length,
   }

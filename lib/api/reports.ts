@@ -3,7 +3,7 @@ import type { ApiResponse, ApiReport, ApiMeta } from '@/types/api'
 
 interface GetReportsParams {
   status?: string
-  category_slug?: string
+  category?: string
   search?: string
   sort?: string
   page?: number

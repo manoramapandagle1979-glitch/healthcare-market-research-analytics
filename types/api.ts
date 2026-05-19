@@ -48,7 +48,7 @@ export interface ApiUser {
   email: string
   name: string
   role: string
-  plan: string
+  plan?: string
   is_active: boolean
   last_login_at?: string
   created_at: string
@@ -138,8 +138,8 @@ export interface ApiCategory {
   id: number
   name: string
   slug: string
-  description: string
-  image_url: string
+  description?: string
+  image_url?: string
   is_active: boolean
   report_count?: number
   created_at: string

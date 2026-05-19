@@ -1,6 +1,5 @@
 import Sidebar from '@/components/layout/Sidebar'
 import TopNav from '@/components/layout/TopNav'
-import DevToolbar from '@/components/dev/DevToolbar'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +11,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
-      <DevToolbar />
     </div>
   )
 }

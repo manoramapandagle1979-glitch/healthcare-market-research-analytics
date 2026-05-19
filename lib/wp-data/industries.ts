@@ -14,6 +14,7 @@ export const wpIndustries = industriesJson as WpIndustry[]
 
 export const wpIndustriesAsIndustry: Industry[] = wpIndustries.map((i) => ({
   id: i.slug,
+  slug: i.slug,
   name: i.name,
   subIndustries: i.subIndustries,
   marketCount: i.count,
